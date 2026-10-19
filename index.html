@@ -180,6 +180,17 @@
             <button id="cancelEditBtn" class="secondary" type="button">キャンセル</button>
           </div>
         </form>
+        <div id="memberAdminSection" style="display:none; margin-top:24px;">
+          <h2>メンバー管理</h2>
+          <p>登録メンバーの承認・非承認を管理します。</p>
+
+          <button type="button" id="loadMembersBtn">
+            メンバー一覧を読み込む
+          </button>
+
+          <div id="memberAdminStatus"></div>
+          <div id="memberList"></div>
+        </div>
         <p id="editorStatus" class="status" role="status"></p>
       </section>
 
@@ -328,6 +339,7 @@
       $("welcome").textContent = user.email || "ログイン中";
       $("roleLabel").textContent = isAdmin ? "管理者" : "閲覧メンバー";
       show("adminPanel", isAdmin);
+      show("memberAdminSection", isAdmin);
       show("editActions", isAdmin);
       setLoggedIn(true);
       await loadSongs();
@@ -422,7 +434,105 @@
       }
     });
 
-        $("signUpBtn").addEventListener("click", async () => {
+    
+async function loadMembers() {
+  if (!isAdmin) return;
+
+  message("memberAdminStatus", "メンバー一覧を読み込み中...");
+  $("memberList").replaceChildren();
+
+  const { data, error } = await db.functions.invoke("swift-service", {
+    body: { action: "list" }
+  });
+
+  if (error || data?.error) {
+    message(
+      "memberAdminStatus",
+      data?.error || "一覧を取得できませんでした。"
+    );
+    return;
+  }
+
+  message("memberAdminStatus", "");
+
+  for (const member of data.users || []) {
+    const row = document.createElement("div");
+    row.style.cssText =
+      "border:1px solid #ccc; border-radius:8px; padding:12px; margin-top:10px;";
+
+    const email = document.createElement("div");
+    email.textContent = member.email || "(メールアドレスなし)";
+    email.style.fontWeight = "bold";
+    row.appendChild(email);
+
+    const status = document.createElement("p");
+    status.textContent = !member.email_confirmed_at
+      ? "メール未確認"
+      : member.role === "admin"
+        ? "管理者"
+        : member.role === "member"
+          ? "承認済み"
+          : "未承認";
+    row.appendChild(status);
+
+    if (member.role !== "admin" && member.id) {
+      const button = document.createElement("button");
+      button.type = "button";
+
+      if (member.role === "member") {
+        button.textContent = "非承認にする";
+        button.addEventListener("click", () =>
+          updateMember("revoke", member.id)
+        );
+      } else {
+        button.textContent = "承認";
+        button.disabled = !member.email_confirmed_at;
+        button.addEventListener("click", () =>
+          updateMember("approve", member.id)
+        );
+      }
+
+      row.appendChild(button);
+    }
+
+    $("memberList").appendChild(row);
+  }
+}
+
+async function updateMember(action, userId) {
+  if (!isAdmin) return;
+
+  const promptText = action === "approve"
+    ? "このメンバーを承認しますか？"
+    : "このメンバーの承認を取り消しますか？";
+
+  if (!confirm(promptText)) return;
+
+  message("memberAdminStatus", "処理中...");
+
+  const { data, error } = await db.functions.invoke("swift-service", {
+    body: { action, user_id: userId }
+  });
+
+  if (error || data?.error || !data?.success) {
+    message(
+      "memberAdminStatus",
+      data?.error || "処理に失敗しました。"
+    );
+    return;
+  }
+
+  message(
+    "memberAdminStatus",
+    action === "approve" ? "メンバーを承認しました。" : "承認を取り消しました。"
+  );
+
+  await loadMembers();
+}
+
+$("loadMembersBtn").addEventListener("click", loadMembers);
+
+    $("signUpBtn").addEventListener("click", async () => {
       if (!db) {
         message("loginStatus", "接続情報を確認してください。");
         return;
