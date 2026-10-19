@@ -115,6 +115,11 @@
         <div style="margin-top:16px">
           <button class="primary" type="submit">ログイン</button>
         </div>
+        <div style="margin-top:12px">
+          <button type="button" id="forgotPasswordBtn">
+            パスワードを忘れた場合
+          </button>
+        </div>
       </form>
       <p class="muted">登録済みのバンドメンバー専用です。</p>
       <p id="loginStatus" class="status" role="status"></p>
@@ -387,6 +392,28 @@
         console.error(error);
       } finally {
         button.disabled = false;
+      }
+    });
+
+        $("forgotPasswordBtn").addEventListener("click", async () => {
+      if (!db) return;
+
+      const email = $("email").value.trim();
+
+      if (!email) {
+        message("loginStatus", "先にメールアドレスを入力してください。");
+        return;
+      }
+
+      const { error } = await db.auth.resetPasswordForEmail(email, {
+        redirectTo: "https://northtresscanceler-droid.github.io/northtress-song-book/"
+      });
+
+      if (error) {
+        message("loginStatus", "再設定メールを送信できませんでした。");
+        console.error(error);
+      } else {
+        message("loginStatus", "パスワード再設定メールを送信しました。メールを確認してください。");
       }
     });
 
