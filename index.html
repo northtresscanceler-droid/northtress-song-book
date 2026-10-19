@@ -119,6 +119,11 @@
           <button type="button" id="forgotPasswordBtn">
             パスワードを忘れた場合
           </button>
+          <div style="margin-top:12px">
+            <button type="button" id="signUpBtn">
+              新規登録
+            </button>
+          </div>
         </div>
       </form>
       <p class="muted">登録済みのバンドメンバー専用です。</p>
@@ -415,6 +420,47 @@
       } else {
         message("loginStatus", "パスワード再設定メールを送信しました。メールを確認してください。");
       }
+    });
+
+        $("signUpBtn").addEventListener("click", async () => {
+      if (!db) {
+        message("loginStatus", "接続情報を確認してください。");
+        return;
+      }
+
+      const email = $("email").value.trim();
+      const password = $("password").value;
+
+      if (!email || !password) {
+        message("loginStatus", "メールアドレスとパスワードを入力してください。");
+        return;
+      }
+
+      if (password.length < 8) {
+        message("loginStatus", "パスワードは8文字以上にしてください。");
+        return;
+      }
+
+      const { data, error } = await db.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: "https://northtresscanceler-droid.github.io/northtress-song-book/"
+        }
+      });
+
+      if (error) {
+        message("loginStatus", "登録できませんでした：" + error.message);
+        console.error(error);
+        return;
+      }
+
+      message(
+        "loginStatus",
+        data.session
+          ? "登録しました。メンバー承認後に利用できます。"
+          : "確認メールを送りました。メールを確認してください。"
+      );
     });
 
     $("logoutBtn").addEventListener("click", async () => {
