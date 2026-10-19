@@ -1,0 +1,498 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#17251f">
+  <title>NorTHtress Canceler | Song Book</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #202b25;
+      --green: #244c3a;
+      --paper: #f7f6f0;
+      --line: #dedfd5;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      background: var(--paper);
+      color: var(--ink);
+      font-family: system-ui, -apple-system, sans-serif;
+    }
+    header {
+      background: #17251f;
+      color: white;
+      padding: 25px 20px;
+    }
+    header small {
+      color: #c5d5c9;
+      letter-spacing: 2px;
+    }
+    header h1 {
+      margin: 8px 0 5px;
+      font-size: 25px;
+    }
+    header p { margin: 0; color: #d4ded7; font-size: 13px; }
+    main { max-width: 760px; margin: auto; padding: 20px 16px 50px; }
+    .panel {
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      padding: 18px;
+      margin-bottom: 16px;
+    }
+    h2 { font-size: 19px; margin: 0 0 15px; }
+    label { display: block; font-size: 13px; margin: 12px 0 6px; }
+    input, textarea {
+      width: 100%;
+      padding: 12px;
+      border: 1px solid #cfd3c9;
+      border-radius: 8px;
+      font: inherit;
+      background: white;
+    }
+    textarea { min-height: 130px; resize: vertical; }
+    button {
+      border: 0;
+      border-radius: 8px;
+      padding: 11px 15px;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    button:disabled { opacity: .5; cursor: wait; }
+    .primary { background: var(--green); color: white; }
+    .secondary { background: #e9eee8; color: var(--ink); }
+    .danger { background: #f8e7e4; color: #922e23; }
+    .row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .row button { flex: 1; }
+    .muted { color: #69736b; font-size: 13px; }
+    .status { margin: 12px 0 0; font-size: 14px; overflow-wrap: anywhere; }
+    .song-item {
+      display: block;
+      width: 100%;
+      text-align: left;
+      background: white;
+      border: 1px solid var(--line);
+      margin-bottom: 8px;
+      padding: 15px;
+    }
+    .song-item strong { display: block; font-size: 16px; }
+    .song-item span { display: block; color: #69736b; font-size: 12px; margin-top: 5px; }
+    .song-text {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.85;
+      font-size: 15px;
+    }
+    .chords {
+      background: #f3f5ef;
+      padding: 14px;
+      border-radius: 8px;
+    }
+    .hidden { display: none !important; }
+    footer { text-align: center; padding: 20px; color: #778078; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <small>NORTHTRESS CANCELER</small>
+    <h1>Song Book</h1>
+    <p>Our songs, our memories.</p>
+  </header>
+
+  <main>
+    <section id="loginPanel" class="panel">
+      <h2>メンバーログイン</h2>
+      <form id="loginForm">
+        <label for="email">メールアドレス</label>
+        <input id="email" type="email" autocomplete="username" required>
+        <label for="password">パスワード</label>
+        <input id="password" type="password" autocomplete="current-password" required>
+        <div style="margin-top:16px">
+          <button class="primary" type="submit">ログイン</button>
+        </div>
+      </form>
+      <p class="muted">登録済みのバンドメンバー専用です。</p>
+      <p id="loginStatus" class="status" role="status"></p>
+    </section>
+
+    <section id="appPanel" class="hidden">
+      <div class="panel">
+        <div class="row" style="align-items:center;justify-content:space-between">
+          <div>
+            <strong id="welcome">ログイン中</strong>
+            <p id="roleLabel" class="muted"></p>
+          </div>
+          <button id="logoutBtn" class="secondary" type="button">ログアウト</button>
+        </div>
+      </div>
+
+      <section class="panel">
+        <h2>曲を探す</h2>
+        <label for="search">曲名で検索</label>
+        <input id="search" type="search" placeholder="曲名を入力">
+        <p id="listStatus" class="status muted" role="status"></p>
+        <div id="songList"></div>
+      </section>
+
+      <section id="detailPanel" class="panel hidden">
+        <h2 id="detailTitle"></h2>
+        <p id="detailMeta" class="muted"></p>
+        <h3>コード</h3>
+        <div id="detailChords" class="song-text chords"></div>
+        <h3>歌詞</h3>
+        <div id="detailLyrics" class="song-text"></div>
+        <div id="editActions" class="row hidden" style="margin-top:20px">
+          <button id="editBtn" class="secondary" type="button">編集</button>
+          <button id="deleteBtn" class="danger" type="button">削除</button>
+        </div>
+      </section>
+
+      <section id="editorPanel" class="panel hidden">
+        <h2 id="editorTitle">曲を追加</h2>
+        <form id="songForm">
+          <label for="songTitle">曲名（必須）</label>
+          <input id="songTitle" maxlength="200" required>
+          <label for="songKey">キー</label>
+          <input id="songKey" maxlength="30" placeholder="例：C、Am">
+          <label for="songBpm">BPM</label>
+          <input id="songBpm" type="number" min="1" max="1000" step="1" placeholder="例：120">
+          <label for="songChords">コード譜</label>
+          <textarea id="songChords" placeholder="例：&#10;C       G&#10;Am      F"></textarea>
+          <label for="songLyrics">歌詞</label>
+          <textarea id="songLyrics" placeholder="歌詞を入力"></textarea>
+          <div class="row" style="margin-top:16px">
+            <button class="primary" type="submit">保存</button>
+            <button id="cancelEditBtn" class="secondary" type="button">キャンセル</button>
+          </div>
+        </form>
+        <p id="editorStatus" class="status" role="status"></p>
+      </section>
+
+      <section id="adminPanel" class="panel hidden">
+        <h2>管理者メニュー</h2>
+        <button id="newSongBtn" class="primary" type="button">＋ 曲を追加</button>
+        <p class="muted">管理者のみ曲の追加・編集・削除ができます。</p>
+      </section>
+    </section>
+  </main>
+
+  <footer>NorTHtress Canceler · Song Book</footer>
+
+  <script>
+    // 下の2項目を自分のSupabaseの値に置き換えてください。
+    const SUPABASE_URL = "https://qcxrvmbhtpnesmbwagei.supabase.co/rest/v1/";
+    const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_08A_SZ5lIMj5hjGuNk7tDA_N2I56HDA";
+
+    const $ = (id) => document.getElementById(id);
+    const clientReady =
+      SUPABASE_URL.startsWith("https://") &&
+      !SUPABASE_URL.includes("YOUR_") &&
+      SUPABASE_PUBLISHABLE_KEY.startsWith("sb_publishable_");
+
+    let db = null;
+    let isAdmin = false;
+    let songs = [];
+    let selectedSong = null;
+    let editingId = null;
+
+    function show(el, visible) {
+      $(el).classList.toggle("hidden", !visible);
+    }
+
+    function message(id, text) {
+      $(id).textContent = text;
+    }
+
+    function setLoggedIn(visible) {
+      show("loginPanel", !visible);
+      show("appPanel", visible);
+    }
+
+    function setEditor(visible) {
+      show("editorPanel", visible);
+      if (!visible) {
+        editingId = null;
+        $("songForm").reset();
+        message("editorStatus", "");
+      }
+    }
+
+    function renderSongs() {
+      const q = $("search").value.trim().toLocaleLowerCase();
+      const filtered = songs.filter(song =>
+        (song.title || "").toLocaleLowerCase().includes(q)
+      );
+      const list = $("songList");
+      list.replaceChildren();
+
+      if (!filtered.length) {
+        message("listStatus", songs.length
+          ? "検索に一致する曲がありません。"
+          : "登録されている曲はまだありません。");
+        return;
+      }
+
+      message("listStatus", `${filtered.length}曲`);
+      filtered.forEach(song => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "song-item";
+
+        const title = document.createElement("strong");
+        title.textContent = song.title || "無題";
+        const meta = document.createElement("span");
+        meta.textContent = [
+          song.song_key ? `Key: ${song.song_key}` : "",
+          song.bpm ? `BPM: ${song.bpm}` : ""
+        ].filter(Boolean).join(" · ") || "曲の詳細を見る";
+
+        btn.append(title, meta);
+        btn.addEventListener("click", () => openSong(song));
+        list.append(btn);
+      });
+    }
+
+    function openSong(song) {
+      selectedSong = song;
+      $("detailTitle").textContent = song.title || "無題";
+      $("detailMeta").textContent = [
+        song.song_key ? `Key: ${song.song_key}` : "",
+        song.bpm ? `BPM: ${song.bpm}` : ""
+      ].filter(Boolean).join(" · ");
+      $("detailChords").textContent = song.chords || "コード譜は未登録です。";
+      $("detailLyrics").textContent = song.lyrics || "歌詞は未登録です。";
+      show("detailPanel", true);
+      show("editActions", isAdmin);
+      setEditor(false);
+      $("detailPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    async function loadSongs() {
+      message("listStatus", "曲を読み込んでいます…");
+      const { data, error } = await db
+        .from("songs")
+        .select("id,title,lyrics,chords,song_key,bpm")
+        .order("title", { ascending: true });
+
+      if (error) {
+        message("listStatus", "曲を読み込めませんでした。SupabaseのログインとRLS設定を確認してください。");
+        console.error(error);
+        return;
+      }
+
+      songs = data || [];
+      renderSongs();
+
+      if (selectedSong) {
+        const refreshed = songs.find(s => String(s.id) === String(selectedSong.id));
+        if (refreshed) openSong(refreshed);
+        else {
+          selectedSong = null;
+          show("detailPanel", false);
+        }
+      }
+    }
+
+    async function checkMembership(user) {
+      const { data, error } = await db
+        .from("band_members")
+        .select("role")
+        .eq("user_id", user.id)
+        .maybeSingle();
+
+      if (error || !data) {
+        isAdmin = false;
+        console.error("Membership check failed:", error);
+        await db.auth.signOut();
+        setLoggedIn(false);
+        message("loginStatus", "メンバー登録を確認できませんでした。管理者にお問い合わせください。");
+        return false;
+      }
+
+      isAdmin = data.role === "admin";
+      $("welcome").textContent = user.email || "ログイン中";
+      $("roleLabel").textContent = isAdmin ? "管理者" : "閲覧メンバー";
+      show("adminPanel", isAdmin);
+      show("editActions", isAdmin);
+      setLoggedIn(true);
+      await loadSongs();
+      return true;
+    }
+
+    async function startApp() {
+      if (!clientReady || !window.supabase) {
+        message("loginStatus", "Supabaseの接続情報がまだ設定されていません。");
+        return;
+      }
+
+      db = window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+      );
+
+      const { data, error } = await db.auth.getSession();
+      if (error) {
+        message("loginStatus", "ログイン状態を確認できませんでした。");
+        return;
+      }
+
+      if (data.session) {
+        await checkMembership(data.session.user);
+      }
+
+      db.auth.onAuthStateChange((event, session) => {
+        if (event === "SIGNED_OUT" || !session) {
+          isAdmin = false;
+          songs = [];
+          selectedSong = null;
+          setLoggedIn(false);
+          show("adminPanel", false);
+          show("detailPanel", false);
+          setEditor(false);
+          $("songList").replaceChildren();
+        }
+      });
+    }
+
+    $("loginForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!db) {
+        message("loginStatus", "接続情報を設定してから利用してください。");
+        return;
+      }
+
+      const button = $("loginForm").querySelector("button[type=submit]");
+      button.disabled = true;
+      message("loginStatus", "ログインしています…");
+
+      try {
+        const { data, error } = await db.auth.signInWithPassword({
+          email: $("email").value.trim(),
+          password: $("password").value
+        });
+
+        if (error) throw error;
+        const ok = await checkMembership(data.user);
+        if (ok) {
+          $("password").value = "";
+          message("loginStatus", "");
+        }
+      } catch (error) {
+        message("loginStatus", "ログインできませんでした。メールアドレスとパスワードを確認してください。");
+        console.error(error);
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    $("logoutBtn").addEventListener("click", async () => {
+      if (!db) return;
+      const { error } = await db.auth.signOut();
+      if (error) message("listStatus", "ログアウトできませんでした。");
+    });
+
+    $("search").addEventListener("input", renderSongs);
+
+    function beginEdit(song = null) {
+      if (!isAdmin) return;
+      editingId = song ? song.id : null;
+      $("editorTitle").textContent = song ? "曲を編集" : "曲を追加";
+      $("songTitle").value = song?.title || "";
+      $("songKey").value = song?.song_key || "";
+      $("songBpm").value = song?.bpm ?? "";
+      $("songChords").value = song?.chords || "";
+      $("songLyrics").value = song?.lyrics || "";
+      message("editorStatus", "");
+      setEditor(true);
+      $("editorPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    $("newSongBtn").addEventListener("click", () => beginEdit());
+    $("editBtn").addEventListener("click", () => {
+      if (selectedSong) beginEdit(selectedSong);
+    });
+    $("cancelEditBtn").addEventListener("click", () => setEditor(false));
+
+    $("songForm").addEventListener("submit", async event => {
+      event.preventDefault();
+      if (!db || !isAdmin) return;
+
+      const title = $("songTitle").value.trim();
+      const bpmValue = $("songBpm").value.trim();
+
+      if (!title) {
+        message("editorStatus", "曲名を入力してください。");
+        return;
+      }
+
+      const payload = {
+        title,
+        song_key: $("songKey").value.trim() || null,
+        bpm: bpmValue ? Number(bpmValue) : null,
+        chords: $("songChords").value,
+        lyrics: $("songLyrics").value,
+        updated_at: new Date().toISOString()
+      };
+
+      if (bpmValue && (!Number.isInteger(payload.bpm) || payload.bpm < 1 || payload.bpm > 1000)) {
+        message("editorStatus", "BPMは1〜1000の整数で入力してください。");
+        return;
+      }
+
+      const button = $("songForm").querySelector('button[type="submit"]');
+      button.disabled = true;
+      message("editorStatus", "保存しています…");
+
+      try {
+        let result;
+        if (editingId !== null) {
+          result = await db.from("songs").update(payload).eq("id", editingId);
+        } else {
+          result = await db.from("songs").insert(payload);
+        }
+
+        if (result.error) throw result.error;
+
+        const previousId = editingId;
+        setEditor(false);
+        await loadSongs();
+
+        if (previousId !== null) {
+          const updated = songs.find(s => String(s.id) === String(previousId));
+          if (updated) openSong(updated);
+        }
+        message("listStatus", "保存しました。");
+      } catch (error) {
+        console.error(error);
+        message("editorStatus", "保存できませんでした。管理者権限とRLS設定を確認してください。");
+      } finally {
+        button.disabled = false;
+      }
+    });
+
+    $("deleteBtn").addEventListener("click", async () => {
+      if (!db || !isAdmin || !selectedSong) return;
+      if (!confirm(`「${selectedSong.title}」を削除しますか？この操作は取り消せません。`)) return;
+
+      const { error } = await db.from("songs").delete().eq("id", selectedSong.id);
+      if (error) {
+        message("listStatus", "削除できませんでした。管理者権限を確認してください。");
+        console.error(error);
+        return;
+      }
+
+      selectedSong = null;
+      show("detailPanel", false);
+      await loadSongs();
+      message("listStatus", "曲を削除しました。");
+    });
+
+    startApp();
+  </script>
+</body>
+</html>
