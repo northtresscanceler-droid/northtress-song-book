@@ -562,6 +562,13 @@
             <strong id="welcome">ログイン中</strong>
             <span id="roleLabel" class="muted"></span>
           </div>
+          <button
+            id="adminMenuBtn"
+            class="header-logout hidden"
+            type="button"
+          >
+            管理メニュー ▾
+          </button>
           <button id="logoutBtn" class="header-logout" type="button">
             ログアウト
           </button>
@@ -892,6 +899,7 @@
       $("roleLabel").textContent = isAdmin ? "管理者" : "閲覧メンバー";
       show("adminPanel", isAdmin);
       show("memberAdminSection", isAdmin);
+      show("adminMenuBtn", isAdmin);
       show("editActions", isAdmin);
       setLoggedIn(true);
       await loadSongs();
