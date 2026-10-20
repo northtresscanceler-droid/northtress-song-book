@@ -326,6 +326,23 @@
         flex: 1 1 auto;
       }
     }
+    
+    /* 歌詞・コード欄だけをスクロール */
+    #detailCombined {
+      max-height: 65vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scroll-behavior: auto;
+      padding-bottom: 40px;
+    }
+    
+    /* 操作パネルは上部に残す */
+    #scrollControls {
+      position: sticky;
+      top: 8px;
+      z-index: 5;
+    }
+    
   </style>
   
 </head>
@@ -587,6 +604,7 @@
 
     function openSong(song) {
       selectedSong = song;
+      setScrollBpm(song.bpm);
       $("detailTitle").textContent = song.title || "無題";
     
       $("detailMeta").textContent = [
@@ -1244,6 +1262,105 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     });
 
     startApp();
+    
+    // 自動スクロール設定
+    let scrollAnimationId = null;
+    let scrollLastTime = null;
+    let scrollIsRunning = false;
+    let currentScrollBpm = 120;
+    
+    const scrollArea = document.getElementById("detailCombined");
+    const scrollSpeedInput = document.getElementById("scrollSpeed");
+    const scrollSpeedValue = document.getElementById("scrollSpeedValue");
+    const scrollBpmLabel = document.getElementById("scrollBpm");
+    
+    // BPMから基準速度を計算（1秒あたりのピクセル数）
+    function getBaseScrollSpeed() {
+      return currentScrollBpm * 0.08;
+    }
+    
+    // 選択した曲のBPMを設定
+    function setScrollBpm(bpm) {
+      const parsedBpm = Number(bpm);
+      currentScrollBpm =
+        Number.isFinite(parsedBpm) && parsedBpm > 0
+          ? parsedBpm
+          : 120;
+    
+      scrollBpmLabel.textContent =
+        `BPM: ${currentScrollBpm}` +
+        (bpm ? "" : "（未設定・120で計算）");
+    
+      stopAutoScroll();
+      scrollSpeedInput.value = "1.0";
+      scrollSpeedValue.textContent = "1.0倍";
+    }
+    
+    // スクロール速度を表示
+    scrollSpeedInput.addEventListener("input", () => {
+      scrollSpeedValue.textContent =
+        `${Number(scrollSpeedInput.value).toFixed(1)}倍`;
+    });
+    
+    // 自動スクロールの処理
+    function autoScrollFrame(timestamp) {
+      if (!scrollIsRunning) return;
+    
+      if (scrollLastTime === null) {
+        scrollLastTime = timestamp;
+      }
+    
+      const elapsed = (timestamp - scrollLastTime) / 1000;
+      scrollLastTime = timestamp;
+    
+      const multiplier = Number(scrollSpeedInput.value);
+      const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
+    
+      scrollArea.scrollTop += pixelsPerSecond * elapsed;
+    
+      // 一番下に着いたら停止
+      if (
+        scrollArea.scrollTop + scrollArea.clientHeight >=
+        scrollArea.scrollHeight - 1
+      ) {
+        stopAutoScroll();
+        return;
+      }
+    
+      scrollAnimationId = requestAnimationFrame(autoScrollFrame);
+    }
+    
+    // スタート
+    document.getElementById("scrollStartBtn").addEventListener("click", () => {
+      if (scrollIsRunning) return;
+    
+      scrollIsRunning = true;
+      scrollLastTime = null;
+      scrollAnimationId = requestAnimationFrame(autoScrollFrame);
+    });
+    
+    // 一時停止
+    document.getElementById("scrollPauseBtn").addEventListener("click", () => {
+      stopAutoScroll();
+    });
+    
+    // 停止処理
+    function stopAutoScroll() {
+      scrollIsRunning = false;
+      scrollLastTime = null;
+    
+      if (scrollAnimationId !== null) {
+        cancelAnimationFrame(scrollAnimationId);
+        scrollAnimationId = null;
+      }
+    }
+    
+    // 先頭に戻る
+    document.getElementById("scrollTopBtn").addEventListener("click", () => {
+      stopAutoScroll();
+      scrollArea.scrollTop = 0;
+    });
+    
   </script>
 </body>
 </html>
