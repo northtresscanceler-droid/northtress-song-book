@@ -169,10 +169,16 @@
           <input id="songKey" maxlength="30" placeholder="例：C、Am">
           <label for="songBpm">BPM</label>
           <input id="songBpm" type="number" min="1" max="1000" step="1" placeholder="例：120">
-          <label for="songChords">コード譜</label>
-          <textarea id="songChords" placeholder="例：&#10;C       G&#10;Am      F"></textarea>
-          <label for="songLyrics">歌詞</label>
-          <textarea id="songLyrics" placeholder="歌詞を入力"></textarea>
+
+          <div class="section-editor-header">
+            <label>曲の構成・コード・歌詞</label>
+            <button id="addSectionBtn" class="secondary" type="button">
+              ＋ セクションを追加
+            </button>
+          </div>
+          
+          <div id="sectionEditor"></div>
+
           <div class="row" style="margin-top:16px">
             <button class="primary" type="submit">保存</button>
             <button id="cancelEditBtn" class="secondary" type="button">キャンセル</button>
@@ -630,20 +636,167 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     });
 
     $("search").addEventListener("input", renderSongs);
+    
+    let songSections = [];
+    
+    function createSection(name = "新しいセクション", lines = [{ chords: "", lyrics: "" }]) {
+      return {
+        name,
+        lines: lines.map(line => ({
+          chords: line.chords || "",
+          lyrics: line.lyrics || ""
+        }))
+      };
+    }
+    
+    function renderSections() {
+      const container = $("sectionEditor");
+      container.replaceChildren();
+    
+      songSections.forEach((section, index) => {
+        const card = document.createElement("div");
+        card.className = "section-card";
+    
+        const heading = document.createElement("div");
+        heading.className = "section-heading";
+    
+        const nameInput = document.createElement("input");
+        nameInput.type = "text";
+        nameInput.value = section.name;
+        nameInput.placeholder = "例：Aメロ";
+        nameInput.setAttribute("aria-label", `セクション${index + 1}の名前`);
+        nameInput.addEventListener("input", () => {
+          section.name = nameInput.value;
+        });
+    
+        heading.append(nameInput);
+    
+        const upButton = document.createElement("button");
+        upButton.type = "button";
+        upButton.className = "secondary";
+        upButton.textContent = "↑";
+        upButton.disabled = index === 0;
+        upButton.addEventListener("click", () => {
+          [songSections[index - 1], songSections[index]] =
+            [songSections[index], songSections[index - 1]];
+          renderSections();
+        });
+    
+        const downButton = document.createElement("button");
+        downButton.type = "button";
+        downButton.className = "secondary";
+        downButton.textContent = "↓";
+        downButton.disabled = index === songSections.length - 1;
+        downButton.addEventListener("click", () => {
+          [songSections[index], songSections[index + 1]] =
+            [songSections[index + 1], songSections[index]];
+          renderSections();
+        });
+    
+        const deleteButton = document.createElement("button");
+        deleteButton.type = "button";
+        deleteButton.className = "secondary";
+        deleteButton.textContent = "削除";
+        deleteButton.addEventListener("click", () => {
+          songSections.splice(index, 1);
+          renderSections();
+        });
+    
+        heading.append(upButton, downButton, deleteButton);
+        card.append(heading);
+    
+        section.lines.forEach((line, lineIndex) => {
+          const lineBox = document.createElement("div");
+          lineBox.className = "section-line";
+    
+          const chords = document.createElement("textarea");
+          chords.value = line.chords;
+          chords.placeholder = "コード（例：D / G / Bm / A）";
+          chords.setAttribute("aria-label", `${section.name}のコード`);
+          chords.addEventListener("input", () => {
+            line.chords = chords.value;
+          });
+    
+          const lyrics = document.createElement("textarea");
+          lyrics.value = line.lyrics;
+          lyrics.placeholder = "対応する歌詞（間奏などは空欄でもOK）";
+          lyrics.setAttribute("aria-label", `${section.name}の歌詞`);
+          lyrics.addEventListener("input", () => {
+            line.lyrics = lyrics.value;
+          });
+    
+          lineBox.append(chords, lyrics);
+    
+          const removeLineButton = document.createElement("button");
+          removeLineButton.type = "button";
+          removeLineButton.className = "secondary";
+          removeLineButton.textContent = "この行を削除";
+          removeLineButton.addEventListener("click", () => {
+            section.lines.splice(lineIndex, 1);
+            renderSections();
+          });
+    
+          lineBox.append(removeLineButton);
+          card.append(lineBox);
+        });
+    
+        const addLineButton = document.createElement("button");
+        addLineButton.type = "button";
+        addLineButton.className = "secondary";
+        addLineButton.textContent = "＋ コード・歌詞の行を追加";
+        addLineButton.addEventListener("click", () => {
+          section.lines.push({ chords: "", lyrics: "" });
+          renderSections();
+        });
+    
+        card.append(addLineButton);
+        container.append(card);
+      });
+    }
+    
+    $("addSectionBtn").addEventListener("click", () => {
+      songSections.push(createSection());
+      renderSections();
+    });
 
     function beginEdit(song = null) {
       if (!isAdmin) return;
+    
       editingId = song ? song.id : null;
       $("editorTitle").textContent = song ? "曲を編集" : "曲を追加";
       $("songTitle").value = song?.title || "";
       $("songKey").value = song?.song_key || "";
       $("songBpm").value = song?.bpm ?? "";
-      $("songChords").value = song?.chords || "";
-      $("songLyrics").value = song?.lyrics || "";
+    
+      if (Array.isArray(song?.sections) && song.sections.length > 0) {
+        songSections = song.sections.map(section => createSection(
+          section.name || "セクション",
+          Array.isArray(section.lines) && section.lines.length > 0
+            ? section.lines
+            : [{ chords: "", lyrics: "" }]
+        ));
+      } else if (song) {
+        // 旧形式の曲は、既存のコードと歌詞をそのまま保持する
+        songSections = [
+          createSection("旧データ（全体）", [{
+            chords: song.chords || "",
+            lyrics: song.lyrics || ""
+          }])
+        ];
+      } else {
+        songSections = [createSection("イントロ")];
+      }
+    
+      renderSections();
+    
       message("editorStatus", "");
       setEditor(true);
-      $("editorPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("editorPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     }
+
 
     $("newSongBtn").addEventListener("click", () => beginEdit());
     $("editBtn").addEventListener("click", () => {
