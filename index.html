@@ -549,7 +549,48 @@
       #adminDropdown button {
         margin-top: 6px;
       }
-    
+    .admin-menu-wrap {
+        position: relative;
+      }
+      
+      .admin-dropdown {
+        position: absolute;
+        top: calc(100% + 10px);
+        right: 0;
+        z-index: 100;
+        width: min(340px, calc(100vw - 32px));
+        max-height: 70vh;
+        overflow-y: auto;
+        padding: 12px;
+        color: #1f2937;
+        background: #f8fafc;
+        border: 1px solid #cbd5e1;
+        border-radius: 10px;
+        box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+      }
+      
+      .admin-dropdown.hidden {
+        display: none;
+      }
+      
+      .admin-dropdown #adminPanel,
+      .admin-dropdown #memberAdminSection {
+        display: block;
+        margin: 0 !important;
+        padding: 12px;
+        background: #ffffff;
+        border: 1px solid #e2e8f0;
+        border-radius: 8px;
+      }
+      
+      .admin-dropdown #memberAdminSection {
+        margin-top: 12px !important;
+      }
+      
+      .admin-dropdown h2 {
+        margin-top: 0;
+        font-size: 1rem;
+      }
   </style>
   
 </head>
@@ -587,6 +628,7 @@
     </section>
 
     <section id="appPanel" class="hidden">
+      
       <header class="app-header">
         <div class="header-brand">
           <div class="header-icon">♫</div>
@@ -595,40 +637,43 @@
             <p class="app-subtitle">Band Rehearsal</p>
           </div>
         </div>
-
+      
         <div class="header-user">
           <div class="header-user-info">
             <strong id="welcome">ログイン中</strong>
             <span id="roleLabel" class="muted"></span>
           </div>
-          <button
-            id="adminMenuBtn"
-            class="header-logout hidden"
-            type="button"
-          >
-            管理メニュー ▾
-
-            <div id="adminDropdown" class="hidden">
+      
+          <div class="admin-menu-wrap">
+            <button
+              id="adminMenuBtn"
+              class="header-logout hidden"
+              type="button"
+            >
+              管理メニュー ▾
+            </button>
+      
+            <div id="adminDropdown" class="admin-dropdown hidden">
               <section id="adminPanel" class="panel">
                 <h2>管理者メニュー</h2>
-                <button id="newSongBtn" class="primary" type="button">＋ 曲を追加</button>
+                <button id="newSongBtn" class="primary" type="button">
+                  ＋ 曲を追加
+                </button>
                 <p class="muted">管理者のみ曲の追加・編集・削除ができます。</p>
               </section>
-            
-              <div id="memberAdminSection" style="margin-top:16px;">
+      
+              <div id="memberAdminSection" class="panel hidden">
                 <h2>メンバー管理</h2>
                 <p>登録メンバーの承認・非承認を管理します。</p>
-            
                 <button type="button" id="loadMembersBtn">
                   メンバー一覧を読み込む
                 </button>
-            
                 <div id="memberAdminStatus"></div>
                 <div id="memberList"></div>
               </div>
             </div>
-
-          </button>
+          </div>
+      
           <button id="logoutBtn" class="header-logout" type="button">
             ログアウト
           </button>
