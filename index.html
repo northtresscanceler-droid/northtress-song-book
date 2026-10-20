@@ -95,6 +95,34 @@
     }
     .hidden { display: none !important; }
     footer { text-align: center; padding: 20px; color: #778078; font-size: 12px; }
+    
+    #detailCombined h3 {
+      margin: 24px 0 12px;
+      padding-bottom: 8px;
+      border-bottom: 1px solid #d5d9e0;
+    }
+    
+    #detailCombined h3:first-child {
+      margin-top: 8px;
+    }
+    
+    .chord-line {
+      font-family: monospace;
+      font-size: 1rem;
+      font-weight: 700;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      margin-top: 12px;
+      line-height: 1.8;
+    }
+    
+    .lyric-line {
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      line-height: 1.9;
+      margin: 2px 0 16px;
+    }
+
   </style>
 
   .section-editor-header {
@@ -397,20 +425,56 @@
     function openSong(song) {
       selectedSong = song;
       $("detailTitle").textContent = song.title || "無題";
+    
       $("detailMeta").textContent = [
         song.song_key ? `Key: ${song.song_key}` : "",
         song.bpm ? `BPM: ${song.bpm}` : ""
       ].filter(Boolean).join(" · ");
-      $("detailCombined").textContent =
-        "【コード】\n" +
-        (song.chords || "コード譜は未登録です。") +
-        "\n\n【歌詞】\n" +
-        (song.lyrics || "歌詞は未登録です。");
+    
+      const container = $("detailCombined");
+      container.replaceChildren();
+    
+      if (Array.isArray(song.sections) && song.sections.length > 0) {
+        song.sections.forEach(section => {
+          const heading = document.createElement("h3");
+          heading.textContent = section.name || "セクション";
+          container.append(heading);
+    
+          (section.lines || []).forEach(line => {
+            if (line.chords) {
+              const chords = document.createElement("div");
+              chords.className = "chord-line";
+              chords.textContent = line.chords;
+              container.append(chords);
+            }
+    
+            if (line.lyrics) {
+              const lyrics = document.createElement("div");
+              lyrics.className = "lyric-line";
+              lyrics.textContent = line.lyrics;
+              container.append(lyrics);
+            }
+          });
+        });
+      } else {
+        const legacy = document.createElement("pre");
+        legacy.textContent =
+          "【コード】\n" +
+          (song.chords || "コード譜は未登録です。") +
+          "\n\n【歌詞】\n" +
+          (song.lyrics || "歌詞は未登録です。");
+        container.append(legacy);
+      }
+    
       show("detailPanel", true);
       show("editActions", isAdmin);
       setEditor(false);
-      $("detailPanel").scrollIntoView({ behavior: "smooth", block: "start" });
+      $("detailPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
     }
+
 
     async function loadSongs() {
       message("listStatus", "曲を読み込んでいます…");
@@ -871,62 +935,104 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     });
     $("cancelEditBtn").addEventListener("click", () => setEditor(false));
 
+    
     $("songForm").addEventListener("submit", async event => {
       event.preventDefault();
       if (!db || !isAdmin) return;
-
+    
       const title = $("songTitle").value.trim();
       const bpmValue = $("songBpm").value.trim();
-
+    
       if (!title) {
         message("editorStatus", "曲名を入力してください。");
         return;
       }
-
-      const payload = {
-        title,
-        song_key: $("songKey").value.trim() || null,
-        bpm: bpmValue ? Number(bpmValue) : null,
-        chords: $("songChords").value,
-        lyrics: $("songLyrics").value,
-        updated_at: new Date().toISOString()
-      };
-
-      if (bpmValue && (!Number.isInteger(payload.bpm) || payload.bpm < 1 || payload.bpm > 1000)) {
+    
+      const bpm = bpmValue ? Number(bpmValue) : null;
+    
+      if (bpmValue && (!Number.isInteger(bpm) || bpm < 1 || bpm > 1000)) {
         message("editorStatus", "BPMは1〜1000の整数で入力してください。");
         return;
       }
-
+    
+      if (songSections.length === 0) {
+        message("editorStatus", "セクションを1つ以上追加してください。");
+        return;
+      }
+    
+      const sections = songSections.map(section => ({
+        name: section.name.trim() || "名称未設定",
+        lines: section.lines.map(line => ({
+          chords: line.chords || "",
+          lyrics: line.lyrics || ""
+        }))
+      }));
+    
+      // 旧形式の列にも内容を残す
+      const legacyChords = sections.map(section => {
+        const lines = section.lines
+          .map(line => line.chords)
+          .filter(Boolean)
+          .join("\n");
+    
+        return lines ? `【${section.name}】\n${lines}` : "";
+      }).filter(Boolean).join("\n\n");
+    
+      const legacyLyrics = sections.map(section => {
+        const lines = section.lines
+          .map(line => line.lyrics)
+          .filter(Boolean)
+          .join("\n");
+    
+        return lines ? `【${section.name}】\n${lines}` : "";
+      }).filter(Boolean).join("\n\n");
+    
+      const payload = {
+        title,
+        song_key: $("songKey").value.trim() || null,
+        bpm,
+        sections,
+        chords: legacyChords,
+        lyrics: legacyLyrics,
+        updated_at: new Date().toISOString()
+      };
+    
       const button = $("songForm").querySelector('button[type="submit"]');
       button.disabled = true;
       message("editorStatus", "保存しています…");
-
+    
       try {
         let result;
+    
         if (editingId !== null) {
           result = await db.from("songs").update(payload).eq("id", editingId);
         } else {
           result = await db.from("songs").insert(payload);
         }
-
+    
         if (result.error) throw result.error;
-
+    
         const previousId = editingId;
         setEditor(false);
         await loadSongs();
-
+    
         if (previousId !== null) {
           const updated = songs.find(s => String(s.id) === String(previousId));
           if (updated) openSong(updated);
         }
+    
         message("listStatus", "保存しました。");
       } catch (error) {
         console.error(error);
-        message("editorStatus", "保存できませんでした。管理者権限とRLS設定を確認してください。");
+        message(
+          "editorStatus",
+          "保存できませんでした。管理者権限、RLS設定、sections列を確認してください。"
+        );
       } finally {
         button.disabled = false;
       }
     });
+
 
     $("deleteBtn").addEventListener("click", async () => {
       if (!db || !isAdmin || !selectedSong) return;
