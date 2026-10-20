@@ -152,10 +152,8 @@
       <section id="detailPanel" class="panel hidden">
         <h2 id="detailTitle"></h2>
         <p id="detailMeta" class="muted"></p>
-        <h3>コード</h3>
-        <div id="detailChords" class="song-text chords"></div>
-        <h3>歌詞</h3>
-        <div id="detailLyrics" class="song-text"></div>
+        <h3>歌詞・コード</h3>
+        <div id="detailCombined" class="song-text"></div>
         <div id="editActions" class="row hidden" style="margin-top:20px">
           <button id="editBtn" class="secondary" type="button">編集</button>
           <button id="deleteBtn" class="danger" type="button">削除</button>
@@ -330,8 +328,11 @@
         song.song_key ? `Key: ${song.song_key}` : "",
         song.bpm ? `BPM: ${song.bpm}` : ""
       ].filter(Boolean).join(" · ");
-      $("detailChords").textContent = song.chords || "コード譜は未登録です。";
-      $("detailLyrics").textContent = song.lyrics || "歌詞は未登録です。";
+      $("detailCombined").textContent =
+        "【コード】\n" +
+        (song.chords || "コード譜は未登録です。") +
+        "\n\n【歌詞】\n" +
+        (song.lyrics || "歌詞は未登録です。");
       show("detailPanel", true);
       show("editActions", isAdmin);
       setEditor(false);
