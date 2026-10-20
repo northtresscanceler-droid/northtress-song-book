@@ -446,13 +446,17 @@ async function loadMembers() {
     body: { action: "list" }
   });
 
-  if (error || data?.error) {
-    message(
-      "memberAdminStatus",
-      data?.error || "一覧を取得できませんでした。"
-    );
-    return;
-  }
+if (error || data?.error) {
+  console.error("Member list error:", error, data);
+
+  const detail =
+    data?.error ||
+    error?.message ||
+    "サーバーから応答を取得できませんでした。";
+
+  message("memberAdminStatus", "取得エラー：" + detail);
+  return;
+}
 
   message("memberAdminStatus", "");
 
