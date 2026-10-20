@@ -502,7 +502,7 @@
       message("listStatus", "曲を読み込んでいます…");
       const { data, error } = await db
         .from("songs")
-        .select("id,title,lyrics,chords,song_key,bpm")
+        .select("id,title,lyrics,chords,song_key,bpm,sections")
         .order("title", { ascending: true });
 
       if (error) {
