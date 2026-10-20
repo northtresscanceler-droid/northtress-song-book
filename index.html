@@ -266,7 +266,22 @@
         margin-top: 24px;
       }
     }
-
+    
+    /* 曲リストと歌詞・コードの左右レイアウト */
+    .song-layout {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) minmax(0, 2fr);
+      gap: 16px;
+      align-items: start;
+    }
+    
+    /* スマホでは縦並び */
+    @media (max-width: 700px) {
+      .song-layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+    
   </style>
   
 </head>
@@ -313,26 +328,30 @@
           <button id="logoutBtn" class="secondary" type="button">ログアウト</button>
         </div>
       </div>
-
-      <section class="panel">
-        <h2>曲を探す</h2>
-        <label for="search">曲名で検索</label>
-        <input id="search" type="search" placeholder="曲名を入力">
-        <p id="listStatus" class="status muted" role="status"></p>
-        <div id="songList"></div>
-      </section>
-
-      <section id="detailPanel" class="panel hidden">
-        <h2 id="detailTitle"></h2>
-        <p id="detailMeta" class="muted"></p>
-        <h3>歌詞・コード</h3>
-        <div id="detailCombined" class="song-text"></div>
-        <div id="editActions" class="row hidden" style="margin-top:20px">
-          <button id="editBtn" class="secondary" type="button">編集</button>
-          <button id="deleteBtn" class="danger" type="button">削除</button>
-        </div>
-      </section>
-
+      
+      <div class="song-layout">
+        
+        <section class="panel">
+          <h2>曲を探す</h2>
+          <label for="search">曲名で検索</label>
+          <input id="search" type="search" placeholder="曲名を入力">
+          <p id="listStatus" class="status muted" role="status"></p>
+          <div id="songList"></div>
+        </section>
+  
+        <section id="detailPanel" class="panel hidden">
+          <h2 id="detailTitle"></h2>
+          <p id="detailMeta" class="muted"></p>
+          <h3>歌詞・コード</h3>
+          <div id="detailCombined" class="song-text"></div>
+          <div id="editActions" class="row hidden" style="margin-top:20px">
+            <button id="editBtn" class="secondary" type="button">編集</button>
+            <button id="deleteBtn" class="danger" type="button">削除</button>
+          </div>
+        </section>
+        
+       </div>
+      
       <section id="editorPanel" class="panel hidden">
         <h2 id="editorTitle">曲を追加</h2>
         <form id="songForm">
