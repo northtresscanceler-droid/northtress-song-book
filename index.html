@@ -1593,12 +1593,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
       scrollArea.scrollTop += pixelsPerSecond * elapsed;
-
-      if (scrollArea.scrollHeight <= scrollArea.clientHeight) {
-        stopAutoScroll();
-        return;
-      }
-    
+  
       // 一番下に着いたら停止
       if (
         scrollArea.scrollTop + scrollArea.clientHeight >=
@@ -1613,13 +1608,17 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     
     // スタート
     document.getElementById("scrollStartBtn").addEventListener("click", () => {
-      if (scrollIsRunning) return;
+      stopAutoScroll();
     
       scrollIsRunning = true;
       scrollLastTime = null;
-      scrollAnimationId = requestAnimationFrame(autoScrollFrame);
-    });
     
+      scrollAnimationId = requestAnimationFrame((timestamp) => {
+        scrollLastTime = timestamp;
+        scrollAnimationId = requestAnimationFrame(autoScrollFrame);
+      });
+    });
+        
     // 一時停止
     document.getElementById("scrollPauseBtn").addEventListener("click", () => {
       stopAutoScroll();
