@@ -972,9 +972,28 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
         container.append(card);
       });
     }
+
+    const commonSectionNames = [
+      "イントロ",
+      "Aメロ",
+      "Bメロ",
+      "サビ",
+      "間奏",
+      "Cメロ",
+      "落ちサビ",
+      "アウトロ"
+    ];
     
     $("addSectionBtn").addEventListener("click", () => {
-      songSections.push(createSection());
+      const name = prompt(
+        "セクション名を入力してください。\n\nよく使う名前：\n" +
+        commonSectionNames.join(" / "),
+        "Aメロ"
+      );
+    
+      if (name === null || !name.trim()) return;
+    
+      songSections.push(createSection(name.trim()));
       renderSections();
     });
 
