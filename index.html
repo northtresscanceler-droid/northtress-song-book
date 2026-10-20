@@ -235,6 +235,50 @@
       show("appPanel", visible);
     }
 
+
+    let membershipCheckInProgress = false;
+    
+    async function recheckMembership() {
+      if (membershipCheckInProgress) return;
+    
+      const { data: { user }, error } = await db.auth.getUser();
+    
+      if (error || !user) return;
+    
+      membershipCheckInProgress = true;
+    
+      try {
+        const { data, error: membershipError } = await db
+          .from("band_members")
+          .select("role")
+          .eq("user_id", user.id)
+          .maybeSingle();
+    
+        if (membershipError) {
+          console.error("Membership recheck failed:", membershipError);
+          return;
+        }
+        
+        if (!data) {
+          isAdmin = false;
+          await db.auth.signOut();
+          setLoggedIn(false);
+          show("adminPanel", false);
+          show("memberAdminSection", false);
+          show("editActions", false);
+          $("songList").replaceChildren();
+          message(
+            "loginStatus",
+            "メンバー承認が確認できないため、ログアウトしました。"
+          );
+        }
+      } finally {
+        membershipCheckInProgress = false;
+      }
+    }
+
+    setInterval(recheckMembership, 60000);
+    
     function setEditor(visible) {
       show("editorPanel", visible);
       if (!visible) {
