@@ -442,7 +442,7 @@ async function loadMembers() {
   message("memberAdminStatus", "メンバー一覧を読み込み中...");
   $("memberList").replaceChildren();
 
-  const { data, error } = await db.functions.invoke("swift-service", {
+  const { data, error } = await db.functions.invoke("dynamic-action", {
     body: { action: "list" }
   });
 
@@ -511,7 +511,7 @@ async function updateMember(action, userId) {
 
   message("memberAdminStatus", "処理中...");
 
-  const { data, error } = await db.functions.invoke("swift-service", {
+  const { data, error } = await db.functions.invoke("dynamic-action", {
     body: { action, user_id: userId }
   });
 
