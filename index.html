@@ -342,6 +342,117 @@
       top: 8px;
       z-index: 5;
     }
+
+    /* アプリ共通ヘッダー */
+    .app-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      color: #ffffff;
+      background: #202938;
+      border-radius: 12px;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+    }
+    
+    .header-brand,
+    .header-user {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      min-width: 0;
+    }
+    
+    .header-icon {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      font-size: 26px;
+      background: #39485c;
+      border-radius: 10px;
+    }
+    
+    .app-title {
+      display: block;
+      font-size: 1.05rem;
+      letter-spacing: 0.02em;
+    }
+    
+    .app-subtitle {
+      margin: 3px 0 0;
+      color: #cbd5e1;
+      font-size: 0.75rem;
+    }
+    
+    .header-user {
+      justify-content: flex-end;
+    }
+    
+    .header-user-info {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      text-align: right;
+      font-size: 0.85rem;
+    }
+    
+    .header-user-info .muted {
+      color: #cbd5e1;
+      font-size: 0.75rem;
+    }
+    
+    .header-logout {
+      flex-shrink: 0;
+      padding: 8px 12px;
+      color: #ffffff;
+      background: #39485c;
+      border: 1px solid #64748b;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    
+    .header-logout:hover {
+      background: #475569;
+    }
+    
+    @media (max-width: 600px) {
+      .app-header {
+        padding: 12px;
+        gap: 8px;
+      }
+    
+      .header-brand,
+      .header-user {
+        gap: 8px;
+      }
+    
+      .header-icon {
+        width: 34px;
+        height: 34px;
+        font-size: 22px;
+      }
+    
+      .app-title {
+        font-size: 0.85rem;
+      }
+    
+      .app-subtitle {
+        font-size: 0.65rem;
+      }
+    
+      .header-user-info {
+        font-size: 0.75rem;
+      }
+    
+      .header-logout {
+        padding: 7px 8px;
+        font-size: 0.75rem;
+      }
+    }
     
   </style>
   
@@ -380,15 +491,25 @@
     </section>
 
     <section id="appPanel" class="hidden">
-      <div class="panel">
-        <div class="row" style="align-items:center;justify-content:space-between">
+      <header class="app-header">
+        <div class="header-brand">
+          <div class="header-icon">♫</div>
           <div>
-            <strong id="welcome">ログイン中</strong>
-            <p id="roleLabel" class="muted"></p>
+            <strong class="app-title">NorTHtress Song Book</strong>
+            <p class="app-subtitle">Band Rehearsal</p>
           </div>
-          <button id="logoutBtn" class="secondary" type="button">ログアウト</button>
         </div>
-      </div>
+
+        <div class="header-user">
+          <div class="header-user-info">
+            <strong id="welcome">ログイン中</strong>
+            <span id="roleLabel" class="muted"></span>
+          </div>
+          <button id="logoutBtn" class="header-logout" type="button">
+            ログアウト
+          </button>
+        </div>
+      </header>
       
       <div class="song-layout">
         
