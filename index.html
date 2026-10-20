@@ -1593,6 +1593,11 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
       scrollArea.scrollTop += pixelsPerSecond * elapsed;
+
+      if (scrollArea.scrollHeight <= scrollArea.clientHeight) {
+        stopAutoScroll();
+        return;
+      }
     
       // 一番下に着いたら停止
       if (
