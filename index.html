@@ -1593,7 +1593,15 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
       scrollArea.scrollTop += pixelsPerSecond * elapsed;
-  
+
+
+      console.log("スクロール診断", {
+          top: scrollArea.scrollTop,
+          clientHeight: scrollArea.clientHeight,
+          scrollHeight: scrollArea.scrollHeight,
+          multiplier: Number(scrollSpeedInput.value)
+        });
+          
       // 一番下に着いたら停止
       if (
         scrollArea.scrollTop + scrollArea.clientHeight >=
