@@ -453,6 +453,63 @@
         font-size: 0.75rem;
       }
     }
+
+    /* 演奏操作パネルをコンパクトに */
+    #scrollControls {
+      position: sticky;
+      top: 8px;
+      z-index: 20;
+      padding: 8px 12px;
+      margin: 8px 0 12px;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    }
+    
+    #scrollControls .scroll-info {
+      gap: 8px;
+      margin-bottom: 4px;
+      font-size: 0.8rem;
+    }
+    
+    #scrollControls input[type="range"] {
+      margin: 4px 0 8px;
+    }
+    
+    #scrollControls .scroll-buttons {
+      gap: 6px;
+    }
+    
+    #scrollControls .scroll-buttons button {
+      padding: 6px 10px;
+      font-size: 0.8rem;
+    }
+    
+    /* 歌詞・コード欄は独立してスクロール */
+    #detailCombined {
+      max-height: 65vh;
+      overflow-y: auto;
+      overscroll-behavior: contain;
+      scroll-behavior: auto;
+      padding-bottom: 40px;
+    }
+    
+    @media (max-width: 600px) {
+      #scrollControls {
+        padding: 7px;
+      }
+    
+      #scrollControls .scroll-info {
+        gap: 6px;
+        font-size: 0.75rem;
+      }
+    
+      #scrollControls .scroll-buttons button {
+        padding: 7px;
+        font-size: 0.75rem;
+      }
+    }
     
   </style>
   
