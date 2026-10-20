@@ -282,6 +282,50 @@
       }
     }
     
+    /* 自動スクロール操作パネル */
+    .scroll-controls {
+      position: sticky;
+      top: 8px;
+      z-index: 5;
+      padding: 12px;
+      margin: 12px 0 20px;
+      background: #f3f4f6;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+    }
+    
+    .scroll-info {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 12px;
+      margin-bottom: 8px;
+    }
+    
+    .scroll-controls input[type="range"] {
+      width: 100%;
+      margin: 8px 0 12px;
+    }
+    
+    .scroll-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+    
+    .scroll-buttons button {
+      margin: 0;
+    }
+    
+    @media (max-width: 600px) {
+      .scroll-controls {
+        padding: 10px;
+      }
+    
+      .scroll-buttons button {
+        flex: 1 1 auto;
+      }
+    }
   </style>
   
 </head>
@@ -343,6 +387,28 @@
           <h2 id="detailTitle"></h2>
           <p id="detailMeta" class="muted"></p>
           <h3>歌詞・コード</h3>
+          <div id="scrollControls" class="scroll-controls">
+            <div class="scroll-info">
+              <span id="scrollBpm">BPM: --</span>
+              <label for="scrollSpeed">スクロール速度</label>
+              <strong id="scrollSpeedValue">1.0倍</strong>
+            </div>
+          
+            <input
+              id="scrollSpeed"
+              type="range"
+              min="0.5"
+              max="2.0"
+              step="0.1"
+              value="1.0"
+            >
+          
+            <div class="scroll-buttons">
+              <button id="scrollStartBtn" type="button">▶ スタート</button>
+              <button id="scrollPauseBtn" type="button" class="secondary">⏸ 一時停止</button>
+              <button id="scrollTopBtn" type="button" class="secondary">↥ 先頭に戻る</button>
+            </div>
+          </div>
           <div id="detailCombined" class="song-text"></div>
           <div id="editActions" class="row hidden" style="margin-top:20px">
             <button id="editBtn" class="secondary" type="button">編集</button>
