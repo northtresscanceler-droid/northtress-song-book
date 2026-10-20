@@ -439,20 +439,26 @@
           const heading = document.createElement("h3");
           heading.textContent = section.name || "セクション";
           container.append(heading);
-    
+          
           (section.lines || []).forEach(line => {
-            if (line.chords) {
-              const chords = document.createElement("div");
-              chords.className = "chord-line";
-              chords.textContent = line.chords;
-              container.append(chords);
-            }
-    
-            if (line.lyrics) {
-              const lyrics = document.createElement("div");
-              lyrics.className = "lyric-line";
-              lyrics.textContent = line.lyrics;
-              container.append(lyrics);
+            const chordLines = (line.chords || "").split("\n");
+            const lyricLines = (line.lyrics || "").split("\n");
+            const count = Math.max(chordLines.length, lyricLines.length);
+          
+            for (let i = 0; i < count; i++) {
+              if (chordLines[i]?.trim()) {
+                const chords = document.createElement("div");
+                chords.className = "chord-line";
+                chords.textContent = chordLines[i];
+                container.append(chords);
+              }
+          
+              if (lyricLines[i]?.trim()) {
+                const lyrics = document.createElement("div");
+                lyrics.className = "lyric-line";
+                lyrics.textContent = lyricLines[i];
+                container.append(lyrics);
+              }
             }
           });
         });
