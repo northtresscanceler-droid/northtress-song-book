@@ -568,6 +568,9 @@
             type="button"
           >
             管理メニュー ▾
+            <div id="adminDropdown" class="hidden">
+              <p>管理メニュー</p>
+            </div>
           </button>
           <button id="logoutBtn" class="header-logout" type="button">
             ログアウト
@@ -1546,7 +1549,17 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       stopAutoScroll();
       scrollArea.scrollTop = 0;
     });
+    const adminMenuBtn = document.getElementById("adminMenuBtn");
+    const adminDropdown = document.getElementById("adminDropdown");
     
+    adminMenuBtn.addEventListener("click", () => {
+      const isOpen = !adminDropdown.classList.contains("hidden");
+    
+      adminDropdown.classList.toggle("hidden", isOpen);
+      adminMenuBtn.textContent = isOpen
+        ? "管理メニュー ▾"
+        : "管理メニュー ▴";
+    });
   </script>
 </body>
 </html>
