@@ -458,6 +458,8 @@
             const lyricLines = (line.lyrics || "").split(/\r?\n/);
             const count = Math.max(chordLines.length, lyricLines.length);
             
+            console.log("表示確認", chordLines, lyricLines);
+            
             for (let i = 0; i < count; i++) {
               const pair = document.createElement("div");
               pair.className = "chord-lyric-pair";
