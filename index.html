@@ -123,6 +123,18 @@
       margin: 2px 0 16px;
     }
 
+    .chord-lyric-pair {
+      margin: 12px 0 18px;
+    }
+    
+    .chord-lyric-pair .chord-line {
+      margin: 0;
+    }
+    
+    .chord-lyric-pair .lyric-line {
+      margin: 2px 0 0;
+    }
+
   </style>
 
   .section-editor-header {
@@ -441,24 +453,26 @@
           container.append(heading);
           
           (section.lines || []).forEach(line => {
-            const chordLines = (line.chords || "").split("\n");
-            const lyricLines = (line.lyrics || "").split("\n");
+
+            const chordLines = (line.chords || "").split(/\r?\n/);
+            const lyricLines = (line.lyrics || "").split(/\r?\n/);
             const count = Math.max(chordLines.length, lyricLines.length);
-          
+            
             for (let i = 0; i < count; i++) {
-              if (chordLines[i]?.trim()) {
-                const chords = document.createElement("div");
-                chords.className = "chord-line";
-                chords.textContent = chordLines[i];
-                container.append(chords);
-              }
-          
-              if (lyricLines[i]?.trim()) {
-                const lyrics = document.createElement("div");
-                lyrics.className = "lyric-line";
-                lyrics.textContent = lyricLines[i];
-                container.append(lyrics);
-              }
+              const pair = document.createElement("div");
+              pair.className = "chord-lyric-pair";
+            
+              const chords = document.createElement("div");
+              chords.className = "chord-line";
+              chords.textContent = chordLines[i]?.trim() || " ";
+              pair.append(chords);
+            
+              const lyrics = document.createElement("div");
+              lyrics.className = "lyric-line";
+              lyrics.textContent = lyricLines[i]?.trim() || " ";
+              pair.append(lyrics);
+            
+              container.append(pair);
             }
           });
         });
