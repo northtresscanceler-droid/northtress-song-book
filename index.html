@@ -1579,7 +1579,6 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     });
     
     // 自動スクロールの処理
-    
     function autoScrollFrame(timestamp) {
       if (!scrollIsRunning) return;
     
@@ -1593,12 +1592,16 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const multiplier = Number(scrollSpeedInput.value);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
-      scrollArea.scrollTop =
-        scrollArea.scrollTop + pixelsPerSecond * elapsed;
+      scrollArea.scrollTop += pixelsPerSecond * elapsed;
     
-      scrollAnimationId = requestAnimationFrame(autoScrollFrame);
-    }
-
+      // 一番下に着いたら停止
+      if (
+        scrollArea.scrollTop + scrollArea.clientHeight >=
+        scrollArea.scrollHeight - 1
+      ) {
+        stopAutoScroll();
+        return;
+      }
     
       scrollAnimationId = requestAnimationFrame(autoScrollFrame);
     }
