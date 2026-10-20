@@ -1594,14 +1594,14 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     
       scrollArea.scrollTop += pixelsPerSecond * elapsed;
     
-      // 一番下に着いたら停止
-      if (
-        scrollArea.scrollTop + scrollArea.clientHeight >=
-        scrollArea.scrollHeight - 1
-      ) {
-        stopAutoScroll();
-        return;
-      }
+// 一番下に着いたら停止（いったん無効化して動作確認）
+// if (
+//   scrollArea.scrollTop + scrollArea.clientHeight >=
+//   scrollArea.scrollHeight - 1
+// ) {
+//   stopAutoScroll();
+//   return;
+// }
     
       scrollAnimationId = requestAnimationFrame(autoScrollFrame);
     }
