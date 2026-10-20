@@ -175,13 +175,42 @@
       font-weight: bold;
     }
     
+
     .section-line {
       border-top: 1px solid #d5d9e0;
       padding-top: 12px;
       margin-top: 12px;
       display: grid;
-      gap: 8px;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+      gap: 10px;
+      align-items: start;
     }
+    
+    .section-line textarea {
+      width: 100%;
+      min-width: 0;
+      min-height: 100px;
+      box-sizing: border-box;
+      font-family: inherit;
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+    
+    .section-line button {
+      grid-column: 1 / -1;
+      justify-self: start;
+    }
+    
+    @media (max-width: 600px) {
+      .section-line {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    
+      .section-line button {
+        grid-column: auto;
+      }
+    }
+
     
     .section-line textarea {
       width: 100%;
