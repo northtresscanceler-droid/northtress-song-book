@@ -966,10 +966,14 @@
               chords.textContent = chordLines[i]?.trim() || " ";
               pair.append(chords);
             
-              const lyrics = document.createElement("div");
-              lyrics.className = "lyric-line";
-              lyrics.textContent = lyricLines[i]?.trim() || " ";
-              pair.append(lyrics);
+              const lyricText = lyricLines[i]?.trim() || "";
+              
+              if (lyricText) {
+                const lyrics = document.createElement("div");
+                lyrics.className = "lyric-line";
+                lyrics.textContent = lyricText;
+                pair.append(lyrics);
+              }
             
               container.append(pair);
             }
