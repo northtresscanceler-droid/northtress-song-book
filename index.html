@@ -745,10 +745,13 @@
         </section>
   
         <section id="detailPanel" class="panel hidden">
-          <h2 id="detailTitle"></h2>
-          <p id="detailMeta" class="muted"></p>
-          <h3>歌詞・コード</h3>
-          <div id="scrollControls" class="scroll-controls">
+          <div class="song-toolbar">
+            <div class="song-heading">
+              <h2 id="detailTitle"></h2>
+              <p id="detailMeta" class="muted"></p>
+            </div>
+          
+            <div id="scrollControls" class="scroll-controls">
             <div class="scroll-info">
               <span id="scrollBpm">BPM: --</span>
               <label for="scrollSpeed">スクロール速度</label>
@@ -769,7 +772,9 @@
               <button id="scrollPauseBtn" type="button" class="secondary">⏸ 一時停止</button>
               <button id="scrollTopBtn" type="button" class="secondary">↥ 先頭に戻る</button>
             </div>
+            </div>
           </div>
+          
           <div id="detailCombined" class="song-text"></div>
           <div id="editActions" class="row hidden" style="margin-top:20px">
             <button id="editBtn" class="secondary" type="button">編集</button>
