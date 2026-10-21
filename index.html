@@ -1670,6 +1670,17 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
         ? "管理メニュー ▾"
         : "管理メニュー ▴";
     });
+  
+    document.addEventListener("click", (event) => {
+      const clickedInsideMenu = adminDropdown.contains(event.target);
+      const clickedButton = adminMenuBtn.contains(event.target);
+    
+      if (!clickedInsideMenu && !clickedButton) {
+        adminDropdown.classList.add("hidden");
+        adminMenuBtn.textContent = "管理メニュー ▾";
+      }
+    });
+
   </script>
 </body>
 </html>
