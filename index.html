@@ -594,6 +594,21 @@
         margin-top: 0;
         font-size: 1rem;
       }
+    
+      @media (max-width: 600px) {
+        .admin-dropdown {
+          position: fixed;
+          top: 80px;
+          left: 16px;
+          right: 16px;
+          width: auto;
+          max-width: none;
+          max-height: calc(100vh - 100px);
+          overflow-y: auto;
+          box-sizing: border-box;
+        }
+      }
+
   </style>
   
 </head>
