@@ -826,6 +826,8 @@
     function setLoggedIn(visible) {
       show("loginPanel", !visible);
       show("appPanel", visible);
+    
+      document.querySelector(".header-user").classList.toggle("hidden", !visible);
     }
 
 
