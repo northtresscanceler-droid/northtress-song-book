@@ -649,6 +649,68 @@
         }
       }
 
+    .song-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 16px;
+      }
+      
+      .song-heading {
+        flex: 1;
+        min-width: 0;
+      }
+      
+      .song-heading h2 {
+        margin: 0 0 6px;
+        overflow-wrap: anywhere;
+      }
+      
+      .song-heading p {
+        margin: 0;
+      }
+      
+      .song-toolbar .scroll-controls {
+        position: static;
+        flex: 0 1 340px;
+        min-width: 260px;
+        padding: 8px 10px;
+        margin: 0;
+      }
+      
+      .song-toolbar .scroll-info {
+        gap: 8px;
+        margin-bottom: 4px;
+        font-size: 13px;
+      }
+      
+      .song-toolbar .scroll-controls input[type="range"] {
+        margin: 4px 0 8px;
+      }
+      
+      .song-toolbar .scroll-buttons {
+        gap: 6px;
+      }
+      
+      .song-toolbar .scroll-buttons button {
+        padding: 6px 8px;
+        font-size: 12px;
+      }
+      
+      @media (max-width: 600px) {
+        .song-toolbar {
+          flex-direction: column;
+          align-items: stretch;
+          gap: 12px;
+        }
+      
+        .song-toolbar .scroll-controls {
+          flex: auto;
+          min-width: 0;
+        }
+      }
+
   </style>
   
 </head>
