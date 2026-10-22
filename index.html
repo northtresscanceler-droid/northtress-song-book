@@ -316,17 +316,18 @@
     }
     
     /* 自動スクロール操作パネル */
+
     .scroll-controls {
       position: sticky;
       top: 8px;
       z-index: 5;
-      padding: 6px 4px;
+      padding: 0;
       margin: 8px 0 12px;
       background: transparent;
       border: none;
       border-radius: 0;
     }
-    
+
     .scroll-info {
       display: flex;
       align-items: center;
@@ -342,8 +343,9 @@
     
     .scroll-buttons {
       display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
+      align-items: center;
+      flex-wrap: nowrap;
+      gap: 6px;
     }
     
     .scroll-buttons button {
@@ -356,8 +358,25 @@
       }
     
       .scroll-buttons button {
-        flex: 1 1 auto;
+        flex: 0 0 auto;
+        padding: 6px 10px;
+        min-width: 36px;
       }
+      
+      .scroll-speed-controls {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      
+      .scroll-speed-controls strong {
+        min-width: 42px;
+        text-align: center;
+        font-size: 12px;
+      }
+
+
     }
     
     /* 歌詞・コード欄だけをスクロール */
@@ -813,13 +832,8 @@
               <p id="detailMeta" class="muted"></p>
             </div>
           
-            <div id="scrollControls" class="scroll-controls">
-              <div class="scroll-info">
-                <span id="scrollBpm">BPM: --</span>
-                <label for="scrollSpeed">スクロール速度</label>
-                <strong id="scrollSpeedValue">1.0倍</strong>
-              </div>
             
+            <div id="scrollControls" class="scroll-controls">
               <input
                 id="scrollSpeed"
                 type="range"
@@ -827,14 +841,22 @@
                 max="2.0"
                 step="0.1"
                 value="1.0"
+                hidden
               >
             
               <div class="scroll-buttons">
-                <button id="scrollStartBtn" type="button">▶ スタート</button>
-                <button id="scrollPauseBtn" type="button" class="secondary">⏸ 一時停止</button>
-                <button id="scrollTopBtn" type="button" class="secondary">↥ 先頭に戻る</button>
+                <button id="scrollStartBtn" type="button" aria-label="スタート">▶</button>
+                <button id="scrollPauseBtn" type="button" class="secondary" aria-label="一時停止">Ⅱ</button>
+                <button id="scrollTopBtn" type="button" class="secondary" aria-label="先頭に戻る">↥</button>
+            
+                <span class="scroll-speed-controls">
+                  <button id="scrollSpeedDownBtn" type="button" class="secondary" aria-label="速度を下げる">−</button>
+                  <strong id="scrollSpeedValue">1.0倍</strong>
+                  <button id="scrollSpeedUpBtn" type="button" class="secondary" aria-label="速度を上げる">＋</button>
+                </span>
               </div>
             </div>
+
           </div>
           
           <div id="detailCombined" class="song-text"></div>
@@ -1672,7 +1694,6 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     const scrollArea = document.getElementById("detailCombined");
     const scrollSpeedInput = document.getElementById("scrollSpeed");
     const scrollSpeedValue = document.getElementById("scrollSpeedValue");
-    const scrollBpmLabel = document.getElementById("scrollBpm");
     
     // BPMから基準速度を計算（1秒あたりのピクセル数）
     function getBaseScrollSpeed() {
@@ -1687,20 +1708,31 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
           ? parsedBpm
           : 120;
     
-      scrollBpmLabel.textContent =
-        `BPM: ${currentScrollBpm}` +
-        (bpm ? "" : "（未設定・120で計算）");
-    
       stopAutoScroll();
       scrollSpeedInput.value = "1.0";
       scrollSpeedValue.textContent = "1.0倍";
     }
-    
+
     // スクロール速度を表示
-    scrollSpeedInput.addEventListener("input", () => {
-      scrollSpeedValue.textContent =
-        `${Number(scrollSpeedInput.value).toFixed(1)}倍`;
+    function updateScrollSpeed(delta) {
+      const currentSpeed = Number(scrollSpeedInput.value);
+      const nextSpeed = Math.max(
+        0.5,
+        Math.min(2.0, Math.round((currentSpeed + delta) * 10) / 10)
+      );
+    
+      scrollSpeedInput.value = nextSpeed.toFixed(1);
+      scrollSpeedValue.textContent = `${nextSpeed.toFixed(1)}倍`;
+    }
+    
+    document.getElementById("scrollSpeedDownBtn").addEventListener("click", () => {
+      updateScrollSpeed(-0.1);
     });
+    
+    document.getElementById("scrollSpeedUpBtn").addEventListener("click", () => {
+      updateScrollSpeed(0.1);
+    });
+
     
     // 自動スクロールの処理
     function autoScrollFrame(timestamp) {
