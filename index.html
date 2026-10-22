@@ -1037,7 +1037,6 @@
       stopAutoScroll();
       container.replaceChildren();
       container.scrollTop = 0;
-      console.log("スクロール診断", container.scrollTop, container.clientHeight, container.scrollHeight);
     
       if (Array.isArray(song.sections) && song.sections.length > 0) {
         song.sections.forEach(section => {
@@ -1050,8 +1049,6 @@
             const chordLines = (line.chords || "").split(/\r?\n/);
             const lyricLines = (line.lyrics || "").split(/\r?\n/);
             const count = Math.max(chordLines.length, lyricLines.length);
-            
-            //console.log("表示確認", chordLines, lyricLines);
             
             for (let i = 0; i < count; i++) {
               const pair = document.createElement("div");
@@ -1097,7 +1094,6 @@
       requestAnimationFrame(() => {
         requestAnimationFrame(() => {
           scrollArea.scrollTop = 0;
-          console.log("表示後リセット", scrollArea.scrollTop);
         });
       });
     }
@@ -1776,14 +1772,6 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
       scrollArea.scrollTop += pixelsPerSecond * elapsed;
-
-
-     // console.log("スクロール診断", {
-      //    top: scrollArea.scrollTop,
-      //    clientHeight: scrollArea.clientHeight,
-      //    scrollHeight: scrollArea.scrollHeight,
-      //    multiplier: Number(scrollSpeedInput.value)
-      //  });
           
       // 一番下に着いたら停止
       if (
