@@ -1379,6 +1379,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
 
     $("logoutBtn").addEventListener("click", async () => {
       if (!db) return;
+      stopAutoScroll();
       const { error } = await db.auth.signOut();
       if (error) message("listStatus", "ログアウトできませんでした。");
     });
