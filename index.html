@@ -1088,11 +1088,18 @@
       show("detailPanel", true);
       show("editActions", isAdmin);
       setEditor(false);
+      
       $("detailPanel").scrollIntoView({
         behavior: "smooth",
         block: "start"
       });
-      console.log("表示後の診断", scrollArea.scrollTop, scrollArea.clientHeight, scrollArea.scrollHeight);
+      
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          scrollArea.scrollTop = 0;
+          console.log("表示後リセット", scrollArea.scrollTop);
+        });
+      });
     }
 
 
