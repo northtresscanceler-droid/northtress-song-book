@@ -1035,6 +1035,7 @@
     
       const container = $("detailCombined");
       container.replaceChildren();
+      container.scrollTop = 0;
     
       if (Array.isArray(song.sections) && song.sections.length > 0) {
         song.sections.forEach(section => {
