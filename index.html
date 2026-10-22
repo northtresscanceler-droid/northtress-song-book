@@ -925,8 +925,11 @@
       show("appPanel", visible);
     
       document.querySelector(".header-user").classList.toggle("hidden", !visible);
+    
+      if (visible) {
+        window.scrollTo({ top: 0, behavior: "auto" });
+      }
     }
-
 
     let membershipCheckInProgress = false;
     
