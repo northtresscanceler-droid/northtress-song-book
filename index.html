@@ -320,11 +320,11 @@
       position: sticky;
       top: 8px;
       z-index: 5;
-      padding: 12px;
-      margin: 12px 0 20px;
-      background: #f3f4f6;
-      border: 1px solid #d1d5db;
-      border-radius: 10px;
+      padding: 6px 4px;
+      margin: 8px 0 12px;
+      background: transparent;
+      border: none;
+      border-radius: 0;
     }
     
     .scroll-info {
@@ -814,26 +814,26 @@
             </div>
           
             <div id="scrollControls" class="scroll-controls">
-            <div class="scroll-info">
-              <span id="scrollBpm">BPM: --</span>
-              <label for="scrollSpeed">スクロール速度</label>
-              <strong id="scrollSpeedValue">1.0倍</strong>
-            </div>
-          
-            <input
-              id="scrollSpeed"
-              type="range"
-              min="0.5"
-              max="2.0"
-              step="0.1"
-              value="1.0"
-            >
-          
-            <div class="scroll-buttons">
-              <button id="scrollStartBtn" type="button">▶ スタート</button>
-              <button id="scrollPauseBtn" type="button" class="secondary">⏸ 一時停止</button>
-              <button id="scrollTopBtn" type="button" class="secondary">↥ 先頭に戻る</button>
-            </div>
+              <div class="scroll-info">
+                <span id="scrollBpm">BPM: --</span>
+                <label for="scrollSpeed">スクロール速度</label>
+                <strong id="scrollSpeedValue">1.0倍</strong>
+              </div>
+            
+              <input
+                id="scrollSpeed"
+                type="range"
+                min="0.5"
+                max="2.0"
+                step="0.1"
+                value="1.0"
+              >
+            
+              <div class="scroll-buttons">
+                <button id="scrollStartBtn" type="button">▶ スタート</button>
+                <button id="scrollPauseBtn" type="button" class="secondary">⏸ 一時停止</button>
+                <button id="scrollTopBtn" type="button" class="secondary">↥ 先頭に戻る</button>
+              </div>
             </div>
           </div>
           
