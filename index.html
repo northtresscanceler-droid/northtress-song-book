@@ -1034,6 +1034,7 @@
       ].filter(Boolean).join(" · ");
     
       const container = $("detailCombined");
+      stopAutoScroll();
       container.replaceChildren();
       container.scrollTop = 0;
     
