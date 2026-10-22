@@ -1037,6 +1037,7 @@
       stopAutoScroll();
       container.replaceChildren();
       container.scrollTop = 0;
+      console.log("スクロール診断", container.scrollTop, container.clientHeight, container.scrollHeight);
     
       if (Array.isArray(song.sections) && song.sections.length > 0) {
         song.sections.forEach(section => {
