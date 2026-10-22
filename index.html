@@ -1141,6 +1141,9 @@
       show("memberAdminSection", isAdmin);
       show("adminMenuBtn", isAdmin);
       show("editActions", isAdmin);
+      selectedSong = null;
+      show("detailPanel", false);
+      
       setLoggedIn(true);
       await loadSongs();
       
@@ -1148,6 +1151,7 @@
       if (detail) {
         detail.scrollTop = 0;
       }
+      window.scrollTo({ top: 0, behavior: "auto" });
       
       return true;
 
