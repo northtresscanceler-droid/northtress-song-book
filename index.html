@@ -1143,7 +1143,14 @@
       show("editActions", isAdmin);
       setLoggedIn(true);
       await loadSongs();
+      
+      const detail = $("detailCombined");
+      if (detail) {
+        detail.scrollTop = 0;
+      }
+      
       return true;
+
     }
 
     async function startApp() {
