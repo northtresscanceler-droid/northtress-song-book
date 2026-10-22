@@ -927,8 +927,13 @@
       document.querySelector(".header-user").classList.toggle("hidden", !visible);
     
       if (visible) {
+        const detail = document.getElementById("detailCombined");
+        if (detail) {
+          detail.scrollTop = 0;
+        }
         window.scrollTo({ top: 0, behavior: "auto" });
       }
+
     }
 
     let membershipCheckInProgress = false;
