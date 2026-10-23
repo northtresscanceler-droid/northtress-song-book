@@ -870,6 +870,9 @@
     </div>
   
     <div class="header-user hidden">
+      <button id="showSetlistsBtn" type="button">
+        セットリスト
+      </button>
       <div class="header-user-info">
         <strong id="welcome">ログイン中</strong>
         <span id="roleLabel" class="muted"></span>
@@ -984,7 +987,7 @@
       </div>
 
 
-      <div class="song-layout">
+      <div id="songsView" class="song-layout">
         
         <section class="panel">
           <h2>曲を探す</h2>
@@ -1041,7 +1044,7 @@
         
        </div>
 
-        <section id="setlistPanel" class="panel">
+        <section id="setlistPanel" class="panel hidden">
           <h2>セットリスト</h2>
           
           <button id="openSetlistModalBtn" type="button">＋ 新規作成</button>
@@ -1865,6 +1868,23 @@
           list.style.display = "block";
         }
       });
+    
+    $("showSetlistsBtn").addEventListener("click", () => {
+      const songsView = $("songsView");
+      const setlistPanel = $("setlistPanel");
+      const button = $("showSetlistsBtn");
+    
+      if (setlistPanel.classList.contains("hidden")) {
+        songsView.classList.add("hidden");
+        $("detailPanel").classList.add("hidden");
+        setlistPanel.classList.remove("hidden");
+        button.textContent = "曲一覧に戻る";
+      } else {
+        setlistPanel.classList.add("hidden");
+        songsView.classList.remove("hidden");
+        button.textContent = "セットリスト";
+      }
+    });
     
     $("openSetlistModalBtn").addEventListener("click", () => {
       $("setlistModal").hidden = false;
