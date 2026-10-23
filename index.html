@@ -1109,8 +1109,8 @@
       message("listStatus", "曲を読み込んでいます…");
       const { data, error } = await db
         .from("songs")
-        .select("id,title,lyrics,chords,song_key,bpm,sections")
-        .order("title", { ascending: true });
+        .select("id,title,lyrics,chords,song_key,bpm,sections,sort_order")
+        .order("sort_order", { ascending: true });
 
       if (error) {
         message("listStatus", "曲を読み込めませんでした。SupabaseのログインとRLS設定を確認してください。");
