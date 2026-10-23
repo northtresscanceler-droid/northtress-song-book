@@ -1682,6 +1682,22 @@
     $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
     $("deleteSetlistBtn").addEventListener("click", deleteSetlist);
     
+    $("openSetlistModalBtn").addEventListener("click", () => {
+      $("setlistModal").hidden = false;
+      $("setlistName").focus();
+    });
+    
+    $("closeSetlistModalBtn").addEventListener("click", () => {
+      $("setlistModal").hidden = true;
+    });
+    
+    $("setlistModal").addEventListener("click", (event) => {
+      if (event.target === $("setlistModal")) {
+        $("setlistModal").hidden = true;
+      }
+    });
+
+    
     $("loginForm").addEventListener("submit", async event => {
       event.preventDefault();
       if (!db) {
