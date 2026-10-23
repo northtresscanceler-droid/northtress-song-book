@@ -1439,7 +1439,6 @@
     
         card.addEventListener("click", async () => {
           $("setlistSelect").value = String(setlist.id);
-          $("setlistSelect").dispatchEvent(new Event("change"));
         
           $("setlistManageTitle").textContent = setlist.name;
           $("setlistManageModal").hidden = false;
@@ -1762,8 +1761,6 @@
       await loadSetlistSongs();
       message("addToSetlistStatus", "セットリストに曲を追加しました！");
     }
-
-
 
     async function checkMembership(user) {
       const { data, error } = await db
