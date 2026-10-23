@@ -1108,6 +1108,33 @@
 
         const title = document.createElement("strong");
         title.textContent = song.title || "無題";
+        const removeBtn = document.createElement("button");
+        removeBtn.type = "button";
+        removeBtn.textContent = "この曲を外す";
+        removeBtn.style.marginLeft = "12px";
+        
+        removeBtn.addEventListener("click", async () => {
+          const setlistId = $("setlistSelect").value;
+        
+          if (!confirm(`「${item.songs?.title || "無題"}」をこのセットリストから外しますか？`)) {
+            return;
+          }
+        
+          const { error } = await db
+            .from("setlist_songs")
+            .delete()
+            .eq("setlist_id", setlistId)
+            .eq("song_id", item.song_id);
+        
+          if (error) {
+            console.error("曲の削除に失敗しました:", error);
+            message("setlistStatus", "曲を外せませんでした。");
+            return;
+          }
+        
+          await loadSetlistSongs();
+          message("setlistStatus", "曲をセットリストから外しました。");
+        });
         const meta = document.createElement("span");
         meta.textContent = [
           song.song_key ? `Key: ${song.song_key}` : "",
@@ -1415,6 +1442,7 @@
         ].filter(Boolean).join(" · ");
 
         li.append(title, document.createElement("br"), meta);
+        li.appendChild(removeBtn);
         list.append(li);
       });
 
