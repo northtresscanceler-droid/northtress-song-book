@@ -1548,6 +1548,26 @@
       const setlistId = $("setlistSelect").value;
       const list = $("setlistManageSongs");
       list.replaceChildren();
+      list.ondragover = (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = "move";
+      };
+      
+      list.ondrop = async (event) => {
+        if (event.target !== list) return;
+      
+        event.preventDefault();
+      
+        const draggedSongId = event.dataTransfer.getData("text/plain");
+        const draggedElement = Array.from(list.children).find(
+          element => element.dataset.songId === draggedSongId
+        );
+      
+        if (!draggedElement) return;
+      
+        list.appendChild(draggedElement);
+        await saveSetlistSongOrder();
+      };
 
       if (!setlistId) {
         message("setlistStatus", "セットリストを選択してください。");
