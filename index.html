@@ -853,6 +853,10 @@
             <option value="">セットリストを選択してください</option>
           </select>
 
+          <button id="deleteSetlistBtn" type="button">
+            選択中のセットリストを削除
+          </button>          
+
           <div class="setlist-controls">
             <label for="setlistName">新しいセットリスト名</label>
             <input
@@ -1305,7 +1309,40 @@
       message("setlistStatus", `「${data.name}」を作成しました。`);
     }
 
+    async function deleteSetlist() {
+      const select = $("setlistSelect");
+      const setlistId = select.value;
     
+      if (!setlistId) {
+        message("setlistStatus", "削除するセットリストを選択してください。");
+        return;
+      }
+    
+      const setlistName = select.options[select.selectedIndex].textContent;
+    
+      if (!confirm(`「${setlistName}」を削除しますか？\nこのセットリストの登録内容だけが削除されます。`)) {
+        return;
+      }
+    
+      message("setlistStatus", "削除しています…");
+    
+      const { error } = await db
+        .from("setlists")
+        .delete()
+        .eq("id", setlistId);
+    
+      if (error) {
+        console.error("セットリストの削除に失敗しました:", error);
+        message("setlistStatus", "セットリストを削除できませんでした。");
+        return;
+      }
+    
+      await loadSetlists();
+      $("setlistSongs").replaceChildren();
+    
+      message("setlistStatus", `「${setlistName}」を削除しました。`);
+    }
+
     async function loadSetlistSongs() {
       const setlistId = $("setlistSelect").value;
       const list = $("setlistSongs");
@@ -1562,6 +1599,8 @@
     $("createSetlistBtn").addEventListener("click", createSetlist);
     $("setlistSelect").addEventListener("change", loadSetlistSongs);
     $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
+    $("deleteSetlistBtn").addEventListener("click", deleteSetlist);
+    
     $("loginForm").addEventListener("submit", async event => {
       event.preventDefault();
       if (!db) {
