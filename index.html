@@ -295,6 +295,36 @@
       }
 
     }
+
+    
+    /* セットリスト */
+    #setlistPanel {
+      margin-bottom: 16px;
+    }
+
+    #setlistSelect,
+    #setlistName {
+      width: 100%;
+      box-sizing: border-box;
+      margin-bottom: 12px;
+    }
+
+    .setlist-controls {
+      margin-top: 16px;
+    }
+
+    #createSetlistBtn {
+      margin-top: 4px;
+    }
+
+    #setlistSongs {
+      padding-left: 24px;
+    }
+
+    #setlistSongs li {
+      margin: 8px 0;
+    }
+
     
     /* 曲リストと歌詞・コードの左右レイアウト */
     .song-layout {
@@ -815,8 +845,30 @@
 
     <section id="appPanel" class="hidden">
       
-      
-      
+        <section id="setlistPanel" class="panel">
+          <h2>セットリスト</h2>
+
+          <label for="setlistSelect">セットリストを選択</label>
+          <select id="setlistSelect">
+            <option value="">セットリストを選択してください</option>
+          </select>
+
+          <div class="setlist-controls">
+            <label for="setlistName">新しいセットリスト名</label>
+            <input
+              id="setlistName"
+              type="text"
+              placeholder="例：次回ライブ"
+            >
+            <button id="createSetlistBtn" type="button">
+              セットリストを作成
+            </button>
+          </div>
+
+          <p id="setlistStatus" class="status muted" role="status"></p>
+          <ol id="setlistSongs"></ol>
+        </section>
+
       <div class="song-layout">
         
         <section class="panel">
@@ -832,9 +884,13 @@
             <div class="song-heading">
               <h2 id="detailTitle"></h2>
               <p id="detailMeta" class="muted"></p>
+              
+              <button id="addToSetlistBtn" type="button">
+                選択中のセットリストに追加
+              </button>
+              <p id="addToSetlistStatus" class="status muted" role="status"></p>
             </div>
           
-            
             <div id="scrollControls" class="scroll-controls">
               <input
                 id="scrollSpeed"
@@ -1180,6 +1236,191 @@
       }
     }
 
+    
+    async function loadSetlists() {
+      message("setlistStatus", "セットリストを読み込んでいます…");
+
+      const { data, error } = await db
+        .from("setlists")
+        .select("id,name")
+        .order("created_at", { ascending: true });
+
+      if (error) {
+        console.error("セットリストの読み込みに失敗しました:", error);
+        message("setlistStatus", "セットリストを読み込めませんでした。");
+        return;
+      }
+
+      const select = $("setlistSelect");
+      select.replaceChildren();
+
+      const placeholder = document.createElement("option");
+      placeholder.value = "";
+      placeholder.textContent = "セットリストを選択してください";
+      select.append(placeholder);
+
+      (data || []).forEach(setlist => {
+        const option = document.createElement("option");
+        option.value = setlist.id;
+        option.textContent = setlist.name;
+        select.append(option);
+      });
+
+      message(
+        "setlistStatus",
+        data && data.length
+          ? `${data.length}件のセットリスト`
+          : "セットリストはまだありません。"
+      );
+    }
+
+    async function createSetlist() {
+      const input = $("setlistName");
+      const name = input.value.trim();
+
+      if (!name) {
+        message("setlistStatus", "セットリスト名を入力してください。");
+        input.focus();
+        return;
+      }
+
+      message("setlistStatus", "セットリストを作成しています…");
+
+      const { data, error } = await db
+        .from("setlists")
+        .insert({ name })
+        .select("id,name")
+        .single();
+
+      if (error) {
+        console.error("セットリストの作成に失敗しました:", error);
+        message("setlistStatus", "セットリストを作成できませんでした。");
+        return;
+      }
+
+      input.value = "";
+      await loadSetlists();
+      $("setlistSelect").value = String(data.id);
+
+      message("setlistStatus", `「${data.name}」を作成しました。`);
+    }
+
+    
+    async function loadSetlistSongs() {
+      const setlistId = $("setlistSelect").value;
+      const list = $("setlistSongs");
+      list.replaceChildren();
+
+      if (!setlistId) {
+        message("setlistStatus", "セットリストを選択してください。");
+        return;
+      }
+
+      message("setlistStatus", "曲を読み込んでいます…");
+
+      const { data, error } = await db
+        .from("setlist_songs")
+        .select("song_id,sort_order,songs(id,title,song_key,bpm)")
+        .eq("setlist_id", setlistId)
+        .order("sort_order", { ascending: true });
+
+      if (error) {
+        console.error("セットリストの曲の読み込みに失敗しました:", error);
+        message("setlistStatus", "セットリストの曲を読み込めませんでした。");
+        return;
+      }
+
+      (data || []).forEach(item => {
+        const li = document.createElement("li");
+        const title = document.createElement("strong");
+        title.textContent = item.songs?.title || "無題";
+
+        const meta = document.createElement("span");
+        meta.textContent = [
+          item.songs?.song_key ? `Key: ${item.songs.song_key}` : "",
+          item.songs?.bpm ? `BPM: ${item.songs.bpm}` : ""
+        ].filter(Boolean).join(" · ");
+
+        li.append(title, document.createElement("br"), meta);
+        list.append(li);
+      });
+
+      message(
+        "setlistStatus",
+        data && data.length ? `${data.length}曲` : "このセットリストには曲がありません。"
+      );
+    }
+    
+    async function addSongToSetlist() {
+      const setlistId = $("setlistSelect").value;
+
+      if (!setlistId) {
+        message("addToSetlistStatus", "先にセットリストを選択してください。");
+        return;
+      }
+
+      if (!selectedSong) {
+        message("addToSetlistStatus", "先に曲を選択してください。");
+        return;
+      }
+
+      message("addToSetlistStatus", "曲を追加しています…");
+
+      const { data: existing, error: checkError } = await db
+        .from("setlist_songs")
+        .select("id")
+        .eq("setlist_id", setlistId)
+        .eq("song_id", selectedSong.id)
+        .maybeSingle();
+
+      if (checkError) {
+        console.error(checkError);
+        message("addToSetlistStatus", "登録状況を確認できませんでした。");
+        return;
+      }
+
+      if (existing) {
+        message("addToSetlistStatus", "この曲はすでにセットリストにあります。");
+        return;
+      }
+
+      const { data: items, error: listError } = await db
+        .from("setlist_songs")
+        .select("sort_order")
+        .eq("setlist_id", setlistId)
+        .order("sort_order", { ascending: false })
+        .limit(1);
+
+      if (listError) {
+        console.error(listError);
+        message("addToSetlistStatus", "曲順を確認できませんでした。");
+        return;
+      }
+
+      const nextOrder = items && items.length
+        ? items[0].sort_order + 1
+        : 1;
+
+      const { error } = await db
+        .from("setlist_songs")
+        .insert({
+          setlist_id: Number(setlistId),
+          song_id: selectedSong.id,
+          sort_order: nextOrder
+        });
+
+      if (error) {
+        console.error("セットリストへの追加に失敗しました:", error);
+        message("addToSetlistStatus", "曲を追加できませんでした。");
+        return;
+      }
+
+      await loadSetlistSongs();
+      message("addToSetlistStatus", "セットリストに曲を追加しました！");
+    }
+
+
+
     async function checkMembership(user) {
       const { data, error } = await db
         .from("band_members")
@@ -1205,9 +1446,10 @@
       show("editActions", isAdmin);
       selectedSong = null;
       show("detailPanel", false);
-      
+
       setLoggedIn(true);
       await loadSongs();
+      await loadSetlists();
       
       const detail = $("detailCombined");
       if (detail) {
@@ -1253,7 +1495,10 @@
         }
       });
     }
-
+    
+    $("createSetlistBtn").addEventListener("click", createSetlist);
+    $("setlistSelect").addEventListener("change", loadSetlistSongs);
+    $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
     $("loginForm").addEventListener("submit", async event => {
       event.preventDefault();
       if (!db) {
