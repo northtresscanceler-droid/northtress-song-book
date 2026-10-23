@@ -1857,8 +1857,9 @@
     $("manageDeleteSetlistBtn").addEventListener("click", deleteSetlist);
     $("manageAddSongBtn").addEventListener("click", () => {
         const list = $("availableSongsList");
+        const isVisible = getComputedStyle(list).display !== "none";
       
-        if (list.style.display === "block") {
+        if (isVisible) {
           list.style.display = "none";
         } else {
           renderAvailableSongs();
