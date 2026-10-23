@@ -1682,7 +1682,7 @@
     
     async function saveSetlistSongOrder() {
       const setlistId = $("setlistSelect").value;
-      const list = $("setlistSongs");
+      const list = $("setlistManageSongs");
       const items = Array.from(list.children);
 
       message("setlistStatus", "曲順を保存しています…");
