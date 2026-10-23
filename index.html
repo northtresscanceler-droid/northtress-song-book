@@ -1609,18 +1609,27 @@
 
         li.addEventListener("drop", async (event) => {
           event.preventDefault();
-
+          event.stopPropagation();
+        
           const draggedSongId = event.dataTransfer.getData("text/plain");
           if (draggedSongId === String(item.song_id)) return;
-
+        
           const items = Array.from(list.children);
           const draggedElement = items.find(
             element => element.dataset.songId === draggedSongId
           );
-
+        
           if (!draggedElement) return;
-
-          list.insertBefore(draggedElement, li);
+        
+          const rect = li.getBoundingClientRect();
+          const dropAfter = event.clientY > rect.top + rect.height / 2;
+        
+          if (dropAfter) {
+            li.after(draggedElement);
+          } else {
+            list.insertBefore(draggedElement, li);
+          }
+        
           await saveSetlistSongOrder();
         });
 
