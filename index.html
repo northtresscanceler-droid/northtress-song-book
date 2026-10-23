@@ -963,6 +963,7 @@
           <ol id="setlistManageSongs"></ol>
 
           <div id="availableSongsList"></div>
+          <p id="setlistAddStatus" class="status muted" role="status"></p>
           <button id="manageAddSongBtn" type="button">
             ＋ 曲を追加
           </button>
@@ -1657,12 +1658,18 @@
         button.style.margin = "6px 0";
     
         button.addEventListener("click", async () => {
-        selectedSong = song;
-        await addSongToSetlist();
-        await loadSetlistSongs();
-      
-        $("availableSongsList").style.display = "none";
-      });
+          selectedSong = song;
+          message("setlistAddStatus", "");
+        
+          await addSongToSetlist();
+        
+          const status = $("setlistAddStatus").textContent;
+        
+          if (!status.includes("すでにセットリストにあります")) {
+            $("availableSongsList").style.display = "none";
+            await loadSetlistSongs();
+          }
+        });
     
         list.appendChild(button);
       });
@@ -1724,6 +1731,7 @@
 
       if (existing) {
         message("addToSetlistStatus", "この曲はすでにセットリストにあります。");
+        message("setlistAddStatus", "この曲はすでにセットリストにあります。");
         return;
       }
 
