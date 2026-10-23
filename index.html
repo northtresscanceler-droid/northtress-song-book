@@ -1824,6 +1824,10 @@
     $("closeSetlistModalBtn").addEventListener("click", () => {
       $("setlistModal").hidden = true;
     });
+
+    $("closeSetlistManageModalBtn").addEventListener("click", () => {
+      $("setlistManageModal").hidden = true;
+    });
     
     $("setlistModal").addEventListener("click", (event) => {
       if (event.target === $("setlistModal")) {
