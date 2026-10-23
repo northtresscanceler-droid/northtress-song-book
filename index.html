@@ -1051,12 +1051,7 @@
           <label for="setlistSelect">セットリストを選択</label>
           <select id="setlistSelect">
             <option value="">セットリストを選択してください</option>
-          </select>
-
-
-          <button id="deleteSetlistBtn" type="button">
-            選択中のセットリストを削除
-          </button>          
+          </select>     
 
           <p id="setlistStatus" class="status muted" role="status"></p>
           <ol id="setlistSongs"></ol>
@@ -1535,7 +1530,9 @@
     
       await loadSetlists();
       $("setlistSongs").replaceChildren();
-    
+      $("setlistManageSongs").replaceChildren();
+      $("setlistManageModal").hidden = true;
+      
       message("setlistStatus", `「${setlistName}」を削除しました。`);
     }
 
@@ -1848,6 +1845,7 @@
     $("setlistSelect").addEventListener("change", loadSetlistSongs);
     $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
     $("deleteSetlistBtn").addEventListener("click", deleteSetlist);
+    $("manageDeleteSetlistBtn").addEventListener("click", deleteSetlist);
     $("manageAddSongBtn").addEventListener("click", () => {
         const list = $("availableSongsList");
       
