@@ -1554,8 +1554,6 @@
       };
       
       list.ondrop = async (event) => {
-        if (event.target !== list) return;
-      
         event.preventDefault();
       
         const draggedSongId = event.dataTransfer.getData("text/plain");
@@ -1565,7 +1563,14 @@
       
         if (!draggedElement) return;
       
-        list.appendChild(draggedElement);
+        const lastItem = list.lastElementChild;
+      
+        if (lastItem && lastItem !== draggedElement) {
+          lastItem.after(draggedElement);
+        } else {
+          list.appendChild(draggedElement);
+        }
+      
         await saveSetlistSongOrder();
       };
 
