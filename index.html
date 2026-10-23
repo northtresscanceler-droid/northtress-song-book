@@ -1043,6 +1043,7 @@
         
           songs = reordered;
           renderSongs();
+          await saveSongOrder();
         });
 
         const title = document.createElement("strong");
@@ -1134,6 +1135,24 @@
       });
     }
 
+    async function saveSongOrder() {
+      message("listStatus", "曲順を保存しています…");
+    
+      for (let i = 0; i < songs.length; i++) {
+        const { error } = await db
+          .from("songs")
+          .update({ sort_order: i + 1 })
+          .eq("id", songs[i].id);
+    
+        if (error) {
+          console.error("曲順の保存に失敗しました:", error);
+          message("listStatus", "曲順を保存できませんでした。");
+          return;
+        }
+      }
+    
+      message("listStatus", `${songs.length}曲・曲順を保存しました`);
+    }
 
     async function loadSongs() {
       message("listStatus", "曲を読み込んでいます…");
