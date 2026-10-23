@@ -921,33 +921,6 @@
     </section>
 
     <section id="appPanel" class="hidden">
-      
-        <section id="setlistPanel" class="panel">
-          <h2>セットリスト</h2>
-          
-          <button id="openSetlistModalBtn" type="button">＋ 新規作成</button>
-          <input
-            id="setlistSearch"
-            type="text"
-            placeholder="セットリストを検索..."
-            aria-label="セットリストを検索"
-          >
-
-          <div id="setlistList" class="setlist-list" aria-label="セットリスト一覧"></div>
-          
-          <label for="setlistSelect">セットリストを選択</label>
-          <select id="setlistSelect">
-            <option value="">セットリストを選択してください</option>
-          </select>
-
-
-          <button id="deleteSetlistBtn" type="button">
-            選択中のセットリストを削除
-          </button>          
-
-          <p id="setlistStatus" class="status muted" role="status"></p>
-          <ol id="setlistSongs"></ol>
-        </section>
 
       <div id="setlistModal" class="setlist-modal" hidden>
         <div class="setlist-modal-content">
@@ -978,6 +951,33 @@
           <input id="search" type="search" placeholder="曲名を入力">
           <p id="listStatus" class="status muted" role="status"></p>
           <div id="songList"></div>
+        </section>
+
+        <section id="setlistPanel" class="panel">
+          <h2>セットリスト</h2>
+          
+          <button id="openSetlistModalBtn" type="button">＋ 新規作成</button>
+          <input
+            id="setlistSearch"
+            type="text"
+            placeholder="セットリストを検索..."
+            aria-label="セットリストを検索"
+          >
+
+          <div id="setlistList" class="setlist-list" aria-label="セットリスト一覧"></div>
+          
+          <label for="setlistSelect">セットリストを選択</label>
+          <select id="setlistSelect">
+            <option value="">セットリストを選択してください</option>
+          </select>
+
+
+          <button id="deleteSetlistBtn" type="button">
+            選択中のセットリストを削除
+          </button>          
+
+          <p id="setlistStatus" class="status muted" role="status"></p>
+          <ol id="setlistSongs"></ol>
         </section>
   
         <section id="detailPanel" class="panel hidden">
