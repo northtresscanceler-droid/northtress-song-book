@@ -301,6 +301,42 @@
     #setlistPanel {
       margin-bottom: 16px;
     }
+    
+    /* セットリスト一覧 */
+    .setlist-list {
+      max-height: 280px;
+      overflow-y: auto;
+      margin: 12px 0;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      background: #fff;
+    }
+    
+    .setlist-card {
+      display: block;
+      width: 100%;
+      padding: 14px 16px;
+      margin: 6px 0;
+      text-align: left;
+      font-size: 16px;
+      color: #1f2937;
+      background: #f9fafb;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    
+    .setlist-card:hover {
+      background: #f3f4f6;
+    }
+    
+    .setlist-card.active {
+      background: #e0ecff;
+      border-color: #3b82f6;
+      font-weight: bold;
+    }
+
 
     /* セットリスト作成ポップアップ */
     .setlist-modal[hidden] {
@@ -1302,7 +1338,6 @@
       }
     }
 
-    
     async function loadSetlists() {
       message("setlistStatus", "セットリストを読み込んでいます…");
 
@@ -1316,7 +1351,8 @@
         message("setlistStatus", "セットリストを読み込めませんでした。");
         return;
       }
-
+      
+      renderSetlistCards(data || []);
       const select = $("setlistSelect");
       select.replaceChildren();
 
@@ -1340,6 +1376,62 @@
       );
     }
 
+    function renderSetlistCards(setlists) {
+      const list = $("setlistList");
+      const search = $("setlistSearch");
+      const keyword = search.value.trim().toLowerCase();
+      const selectedId = $("setlistSelect").value;
+    
+      list.replaceChildren();
+    
+      const filtered = setlists.filter(setlist =>
+        setlist.name.toLowerCase().includes(keyword)
+      );
+    
+      if (filtered.length === 0) {
+        const empty = document.createElement("p");
+        empty.textContent = keyword
+          ? "一致するセットリストがありません。"
+          : "セットリストはまだありません。";
+        list.append(empty);
+        return;
+      }
+    
+      filtered.forEach(setlist => {
+        const card = document.createElement("button");
+        card.type = "button";
+        card.className = "setlist-card";
+        card.textContent = setlist.name;
+        card.setAttribute("aria-pressed", String(String(setlist.id) === selectedId));
+    
+        if (String(setlist.id) === selectedId) {
+          card.classList.add("active");
+        }
+    
+        card.addEventListener("click", () => {
+          $("setlistSelect").value = String(setlist.id);
+          $("setlistSelect").dispatchEvent(new Event("change"));
+          renderSetlistCards(setlists);
+        });
+    
+        list.append(card);
+      });
+    }
+
+    $("setlistSearch").addEventListener("input", async () => {
+      const { data, error } = await db
+        .from("setlists")
+        .select("id,name")
+        .order("created_at", { ascending: true });
+    
+      if (error) {
+        console.error("セットリスト検索に失敗しました:", error);
+        return;
+      }
+    
+      renderSetlistCards(data || []);
+    });
+    
     async function createSetlist() {
       const input = $("setlistName");
       const name = input.value.trim();
