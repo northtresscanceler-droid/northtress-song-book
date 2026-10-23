@@ -953,7 +953,8 @@
           <h2 id="setlistManageTitle">セットリスト</h2>
       
           <ol id="setlistManageSongs"></ol>
-      
+
+          <div id="availableSongsList"></div>
           <button id="manageAddSongBtn" type="button">
             ＋ 曲を追加
           </button>
@@ -1440,6 +1441,7 @@
         
           $("setlistManageTitle").textContent = setlist.name;
           $("setlistManageModal").hidden = false;
+          renderAvailableSongs();
         
           renderSetlistCards(setlists);
           await loadSetlistSongs();
@@ -1638,7 +1640,28 @@
         data && data.length ? `${data.length}曲` : "このセットリストには曲がありません。"
       );
     }
-
+    
+    function renderAvailableSongs() {
+      const list = $("availableSongsList");
+      list.replaceChildren();
+    
+      songs.forEach(song => {
+        const button = document.createElement("button");
+        button.type = "button";
+        button.textContent = song.title;
+        button.style.display = "block";
+        button.style.width = "100%";
+        button.style.margin = "6px 0";
+    
+        button.addEventListener("click", async () => {
+          selectedSong = song;
+          await addSongToSetlist();
+          await loadSetlistSongs();
+        });
+    
+        list.appendChild(button);
+      });
+    }
     
     async function saveSetlistSongOrder() {
       const setlistId = $("setlistSelect").value;
@@ -1815,6 +1838,7 @@
     $("setlistSelect").addEventListener("change", loadSetlistSongs);
     $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
     $("deleteSetlistBtn").addEventListener("click", deleteSetlist);
+    $("manageAddSongBtn").addEventListener("click", addSongToSetlist);
     
     $("openSetlistModalBtn").addEventListener("click", () => {
       $("setlistModal").hidden = false;
