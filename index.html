@@ -144,7 +144,6 @@
       margin-top: 8px;
     }
     
-
     .chord-line {
       font-family: monospace;
       font-size: 1.4rem;
@@ -383,7 +382,6 @@
       margin: 4px;
     }
 
-
     #setlistSelect,
     #setlistName {
       width: 100%;
@@ -405,6 +403,16 @@
 
     #setlistSongs li {
       margin: 8px 0;
+    }
+
+    #availableSongsList {
+      display: none;
+      max-height: 250px;
+      overflow-y: auto;
+      margin: 12px 0;
+      padding: 8px;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
     }
 
     
@@ -1654,10 +1662,12 @@
         button.style.margin = "6px 0";
     
         button.addEventListener("click", async () => {
-          selectedSong = song;
-          await addSongToSetlist();
-          await loadSetlistSongs();
-        });
+        selectedSong = song;
+        await addSongToSetlist();
+        await loadSetlistSongs();
+      
+        $("availableSongsList").style.display = "none";
+      });
     
         list.appendChild(button);
       });
@@ -1838,7 +1848,16 @@
     $("setlistSelect").addEventListener("change", loadSetlistSongs);
     $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
     $("deleteSetlistBtn").addEventListener("click", deleteSetlist);
-    $("manageAddSongBtn").addEventListener("click", addSongToSetlist);
+    $("manageAddSongBtn").addEventListener("click", () => {
+        const list = $("availableSongsList");
+      
+        if (list.style.display === "block") {
+          list.style.display = "none";
+        } else {
+          renderAvailableSongs();
+          list.style.display = "block";
+        }
+      });
     
     $("openSetlistModalBtn").addEventListener("click", () => {
       $("setlistModal").hidden = false;
