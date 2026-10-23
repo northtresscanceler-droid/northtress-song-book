@@ -302,6 +302,47 @@
       margin-bottom: 16px;
     }
 
+    /* セットリスト作成ポップアップ */
+    .setlist-modal[hidden] {
+      display: none;
+    }
+    
+    .setlist-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: rgba(0, 0, 0, 0.5);
+    }
+    
+    .setlist-modal-content {
+      width: 100%;
+      max-width: 400px;
+      box-sizing: border-box;
+      padding: 24px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+    }
+    
+    .setlist-modal-content h2 {
+      margin-top: 0;
+    }
+    
+    #setlistModal input {
+      width: 100%;
+      box-sizing: border-box;
+      margin: 8px 0 12px;
+    }
+    
+    #setlistModal button {
+      margin: 4px;
+    }
+
+
     #setlistSelect,
     #setlistName {
       width: 100%;
@@ -847,7 +888,8 @@
       
         <section id="setlistPanel" class="panel">
           <h2>セットリスト</h2>
-
+          
+          <button id="openSetlistModalBtn" type="button">＋ 新規作成</button>
           <label for="setlistSelect">セットリストを選択</label>
           <select id="setlistSelect">
             <option value="">セットリストを選択してください</option>
@@ -857,21 +899,30 @@
             選択中のセットリストを削除
           </button>          
 
-          <div class="setlist-controls">
-            <label for="setlistName">新しいセットリスト名</label>
-            <input
-              id="setlistName"
-              type="text"
-              placeholder="例：次回ライブ"
-            >
-            <button id="createSetlistBtn" type="button">
-              セットリストを作成
-            </button>
-          </div>
-
           <p id="setlistStatus" class="status muted" role="status"></p>
           <ol id="setlistSongs"></ol>
         </section>
+
+      <div id="setlistModal" class="setlist-modal" hidden>
+        <div class="setlist-modal-content">
+          <h2>セットリストを新規作成</h2>
+      
+          <label for="setlistName">セットリスト名</label>
+          <input
+            id="setlistName"
+            type="text"
+            placeholder="例：次回ライブ"
+          >
+      
+          <button id="createSetlistBtn" type="button">
+            作成する
+          </button>
+      
+          <button id="closeSetlistModalBtn" type="button">
+            キャンセル
+          </button>
+        </div>
+      </div>
 
       <div class="song-layout">
         
