@@ -1332,6 +1332,42 @@
 
       (data || []).forEach(item => {
         const li = document.createElement("li");
+        
+        li.draggable = true;
+        li.style.cursor = "grab";
+
+        li.addEventListener("dragstart", (event) => {
+          event.dataTransfer.setData(
+            "text/plain",
+            String(item.song_id)
+          );
+          event.dataTransfer.effectAllowed = "move";
+        });
+
+        li.addEventListener("dragover", (event) => {
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "move";
+        });
+
+        li.addEventListener("drop", async (event) => {
+          event.preventDefault();
+
+          const draggedSongId = event.dataTransfer.getData("text/plain");
+          if (draggedSongId === String(item.song_id)) return;
+
+          const items = Array.from(list.children);
+          const draggedElement = items.find(
+            element => element.dataset.songId === draggedSongId
+          );
+
+          if (!draggedElement) return;
+
+          list.insertBefore(draggedElement, li);
+          await saveSetlistSongOrder();
+        });
+
+        li.dataset.songId = String(item.song_id);
+
         const title = document.createElement("strong");
         title.textContent = item.songs?.title || "無題";
 
@@ -1349,6 +1385,33 @@
         "setlistStatus",
         data && data.length ? `${data.length}曲` : "このセットリストには曲がありません。"
       );
+    }
+
+    
+    async function saveSetlistSongOrder() {
+      const setlistId = $("setlistSelect").value;
+      const list = $("setlistSongs");
+      const items = Array.from(list.children);
+
+      message("setlistStatus", "曲順を保存しています…");
+
+      for (let i = 0; i < items.length; i++) {
+        const songId = items[i].dataset.songId;
+
+        const { error } = await db
+          .from("setlist_songs")
+          .update({ sort_order: i + 1 })
+          .eq("setlist_id", setlistId)
+          .eq("song_id", songId);
+
+        if (error) {
+          console.error("セットリストの曲順保存に失敗しました:", error);
+          message("setlistStatus", "曲順を保存できませんでした。");
+          return;
+        }
+      }
+
+      message("setlistStatus", `${items.length}曲・曲順を保存しました`);
     }
     
     async function addSongToSetlist() {
