@@ -948,6 +948,27 @@
         </div>
       </div>
 
+      <div id="setlistManageModal" class="setlist-modal" hidden>
+        <div class="setlist-modal-content">
+          <h2 id="setlistManageTitle">セットリスト</h2>
+      
+          <ol id="setlistManageSongs"></ol>
+      
+          <button id="manageAddSongBtn" type="button">
+            ＋ 曲を追加
+          </button>
+      
+          <button id="manageDeleteSetlistBtn" type="button">
+            セットリスト自体を削除
+          </button>
+      
+          <button id="closeSetlistManageModalBtn" type="button">
+            閉じる
+          </button>
+        </div>
+      </div>
+
+
       <div class="song-layout">
         
         <section class="panel">
@@ -1413,10 +1434,15 @@
           card.classList.add("active");
         }
     
-        card.addEventListener("click", () => {
+        card.addEventListener("click", async () => {
           $("setlistSelect").value = String(setlist.id);
           $("setlistSelect").dispatchEvent(new Event("change"));
+        
+          $("setlistManageTitle").textContent = setlist.name;
+          $("setlistManageModal").hidden = false;
+        
           renderSetlistCards(setlists);
+          await loadSetlistSongs();
         });
     
         list.append(card);
