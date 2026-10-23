@@ -1672,7 +1672,6 @@
           const status = $("setlistAddStatus").textContent;
         
           if (!status.includes("すでにセットリストにあります")) {
-            $("availableSongsList").style.display = "none";
             await loadSetlistSongs();
           }
         });
