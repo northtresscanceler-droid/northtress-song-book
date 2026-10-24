@@ -1446,6 +1446,8 @@
         
           $("setlistManageTitle").textContent = setlist.name;
           $("setlistManageModal").hidden = false;
+          $("availableSongsList").style.display = "none";
+          $("manageAddSongBtn").textContent = "＋ 曲を追加";
           message("setlistAddStatus", "");
           renderAvailableSongs();
         
