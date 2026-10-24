@@ -121,6 +121,7 @@
       line-height: 2.0;
       font-size: 18px;
     }
+    
     .chords {
       background: #f3f5ef;
       padding: 14px;
@@ -2701,7 +2702,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const multiplier = Number(scrollSpeedInput.value);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
-      scrollArea.scrollTop += pixelsPerSecond * elapsed;
+      window.scrollBy(0, pixelsPerSecond * elapsed);
           
       // 一番下に着いたら停止
       if (
