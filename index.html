@@ -1895,8 +1895,10 @@
         return;
       }
 
-      await loadSetlistSongs();
-      message("setlistAddStatus", "セットリストに曲を追加しました！");
+        await loadSetlistSongs();
+        $("availableSongsList").style.display = "none";
+        $("manageAddSongBtn").textContent = "＋ 曲を追加";
+        message("setlistAddStatus", "セットリストに曲を追加しました！");
     }
 
     async function checkMembership(user) {
