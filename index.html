@@ -2405,6 +2405,16 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       songSections.push(createSection(name));
       renderSections();
       $("sectionNameModal").hidden = true;
+      
+      const sectionCards = $("sectionEditor").querySelectorAll(".section-card");
+      const newSection = sectionCards[sectionCards.length - 1];
+      
+      if (newSection) {
+        newSection.scrollIntoView({
+          behavior: "smooth",
+          block: "center"
+        });
+      }
     });
     
     $("cancelSectionNameBtn").addEventListener("click", () => {
