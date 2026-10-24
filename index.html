@@ -2647,6 +2647,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     // 自動スクロール設定
     let scrollAnimationId = null;
     let scrollLastTime = null;
+    let scrollPixelRemainder = 0;
     let scrollIsRunning = false;
     let currentScrollBpm = 120;
     
@@ -2707,7 +2708,10 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const multiplier = Number(scrollSpeedInput.value);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
-      scrollArea.scrollTop += Math.max(1, Math.round(pixelsPerSecond * elapsed));
+      scrollPixelRemainder += pixelsPerSecond * elapsed;
+      const scrollPixels = Math.floor(scrollPixelRemainder);
+      scrollPixelRemainder -= scrollPixels;
+      scrollArea.scrollTop += scrollPixels;
                 
       // 一番下に着いたら停止
       if (
@@ -2727,6 +2731,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     
       scrollIsRunning = true;
       scrollLastTime = null;
+      scrollPixelRemainder = 0;
       scrollAnimationId = requestAnimationFrame(autoScrollFrame);
     });
         
