@@ -2346,6 +2346,21 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
         });
     
         card.append(addLineButton);
+        
+        const backButton = document.createElement("button");
+        backButton.type = "button";
+        backButton.className = "secondary";
+        backButton.textContent = "↑ セクション追加ボタンへ戻る";
+        backButton.style.marginTop = "12px";
+        
+        backButton.addEventListener("click", () => {
+          $("addSectionBtn").scrollIntoView({
+            behavior: "smooth",
+            block: "center"
+          });
+        });
+        
+        card.append(backButton);
         container.append(card);
       });
     }
