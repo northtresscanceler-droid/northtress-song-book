@@ -1078,6 +1078,18 @@
           </div>
           
           <div id="sectionEditor"></div>
+          <datalist id="sectionNameOptions">
+            <option value="イントロ">
+            <option value="Aメロ">
+            <option value="Bメロ">
+            <option value="サビ">
+            <option value="落ちサビ">
+            <option value="Cメロ">
+            <option value="間奏">
+            <option value="ギターソロ">
+            <option value="ブリッジ">
+            <option value="アウトロ">
+          </datalist>
 
           <div class="row" style="margin-top:16px">
             <button class="primary" type="submit">保存</button>
@@ -2167,6 +2179,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
         const nameInput = document.createElement("input");
         nameInput.type = "text";
         nameInput.value = section.name;
+        nameInput.setAttribute("list", "sectionNameOptions");
         nameInput.placeholder = "例：Aメロ";
         nameInput.setAttribute("aria-label", `セクション${index + 1}の名前`);
         nameInput.addEventListener("input", () => {
@@ -2321,7 +2334,16 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     }
 
 
-    $("newSongBtn").addEventListener("click", () => beginEdit());
+    $("newSongBtn").addEventListener("click", () => {
+      $("adminDropdown").classList.add("hidden");
+    
+      beginEdit();
+    
+      $("editorPanel").scrollIntoView({
+        behavior: "smooth",
+        block: "start"
+      });
+    });
     $("editBtn").addEventListener("click", () => {
       if (selectedSong) beginEdit(selectedSong);
     });
