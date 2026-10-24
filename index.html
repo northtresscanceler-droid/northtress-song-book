@@ -2705,9 +2705,10 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       scrollLastTime = timestamp;
     
       const multiplier = Number(scrollSpeedInput.value);
+      scrollSpeedValue.textContent = `${multiplier.toFixed(1)}倍 / 速度:${pixelsPerSecond.toFixed(1)}`;
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
-      scrollArea.scrollTop += pixelsPerSecond * elapsed;
+      scrollArea.scrollTop += Math.max(1, Math.round(pixelsPerSecond * elapsed));
                 
       // 一番下に着いたら停止
       if (
