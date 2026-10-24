@@ -2030,6 +2030,11 @@
       }
     });
 
+    $("setlistManageModal").addEventListener("click", (event) => {
+      if (event.target === $("setlistManageModal")) {
+        $("setlistManageModal").hidden = true;
+      }
+    });
     
     $("loginForm").addEventListener("submit", async event => {
       event.preventDefault();
