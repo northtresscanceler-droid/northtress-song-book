@@ -1742,16 +1742,16 @@
       const setlistId = $("setlistSelect").value;
 
       if (!setlistId) {
-        message("addToSetlistStatus", "先にセットリストを選択してください。");
+        message("setlistAddStatus", "先にセットリストを選択してください。");
         return;
       }
 
       if (!selectedSong) {
-        message("addToSetlistStatus", "先に曲を選択してください。");
+        message("setlistAddStatus", "先に曲を選択してください。");
         return;
       }
 
-      message("addToSetlistStatus", "曲を追加しています…");
+      message("setlistAddStatus", "曲を追加しています…");
 
       const { data: existing, error: checkError } = await db
         .from("setlist_songs")
@@ -1762,12 +1762,12 @@
 
       if (checkError) {
         console.error(checkError);
-        message("addToSetlistStatus", "登録状況を確認できませんでした。");
+        message("setlistAddStatus", "登録状況を確認できませんでした。");
         return;
       }
 
       if (existing) {
-        message("addToSetlistStatus", "この曲はすでにセットリストにあります。");
+        message("setlistAddStatus", "この曲はすでにセットリストにあります。");
         message("setlistAddStatus", "この曲はすでにセットリストにあります。");
         return;
       }
@@ -1781,7 +1781,7 @@
 
       if (listError) {
         console.error(listError);
-        message("addToSetlistStatus", "曲順を確認できませんでした。");
+        message("setlistAddStatus", "曲順を確認できませんでした。");
         return;
       }
 
@@ -1799,12 +1799,12 @@
 
       if (error) {
         console.error("セットリストへの追加に失敗しました:", error);
-        message("addToSetlistStatus", "曲を追加できませんでした。");
+        message("setlistAddStatus", "曲を追加できませんでした。");
         return;
       }
 
       await loadSetlistSongs();
-      message("addToSetlistStatus", "セットリストに曲を追加しました！");
+      message("setlistAddStatus", "セットリストに曲を追加しました！");
     }
 
     async function checkMembership(user) {
