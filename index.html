@@ -2698,9 +2698,6 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       if (!scrollIsRunning) return;
 
       document.getElementById("scrollSpeedValue").textContent =
-      "位置:" + Math.round(scrollArea.scrollTop) +
-      " 高さ:" + scrollArea.scrollHeight +
-      " 表示:" + scrollArea.clientHeight;
     
       if (scrollLastTime === null) {
         scrollLastTime = timestamp;
