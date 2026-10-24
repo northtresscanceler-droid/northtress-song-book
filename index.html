@@ -1002,11 +1002,6 @@
             <div class="song-heading">
               <h2 id="detailTitle"></h2>
               <p id="detailMeta" class="muted"></p>
-              
-              <button id="addToSetlistBtn" type="button">
-                選択中のセットリストに追加
-              </button>
-              <p id="addToSetlistStatus" class="status muted" role="status"></p>
             </div>
           
             <div id="scrollControls" class="scroll-controls">
@@ -1889,7 +1884,6 @@
     
     $("createSetlistBtn").addEventListener("click", createSetlist);
     $("setlistSelect").addEventListener("change", loadSetlistSongs);
-    $("addToSetlistBtn").addEventListener("click", addSongToSetlist);
     $("manageDeleteSetlistBtn").addEventListener("click", deleteSetlist);
     $("manageAddSongBtn").addEventListener("click", () => {
         const list = $("availableSongsList");
