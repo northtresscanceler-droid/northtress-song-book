@@ -362,24 +362,23 @@
       width: 100%;
       max-width: 400px;
       max-height: 85vh;
-      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
       box-sizing: border-box;
       padding: 24px;
       background: #fff;
       border-radius: 12px;
       box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+      overflow: hidden;
     }
 
     #setlistManageSongs {
-      max-height: 40vh;
+      flex: 0 1 auto;
+      min-height: 0;
+      max-height: 25vh;
       overflow-y: auto;
       padding-left: 24px;
       margin: 12px 0;
-    }
-
-    #availableSongsList {
-      max-height: 40vh;
-      overflow-y: auto;
     }
     
     .setlist-modal-content h2 {
@@ -421,7 +420,9 @@
 
     #availableSongsList {
       display: none;
-      max-height: 250px;
+      flex: 0 1 auto;
+      min-height: 0;
+      max-height: 25vh;
       overflow-y: auto;
       margin: 12px 0;
       padding: 8px;
