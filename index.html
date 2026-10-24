@@ -2713,6 +2713,7 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
       const pixelsPerSecond = getBaseScrollSpeed() * multiplier;
     
       scrollArea.scrollTop += pixelsPerSecond * elapsed;
+      scrollArea.scrollTop = Math.min(scrollArea.scrollTop + 5, scrollArea.scrollHeight - scrollArea.clientHeight);
                 
       // 一番下に着いたら停止
       if (
