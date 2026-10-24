@@ -1733,8 +1733,13 @@
         const removeBtn = document.createElement("button");
         
         removeBtn.type = "button";
-        removeBtn.textContent = "この曲を外す";
-        removeBtn.style.marginLeft = "12px";
+        removeBtn.textContent = "×";
+        removeBtn.title = "この曲をセットリストから外す";
+        removeBtn.setAttribute("aria-label", "この曲をセットリストから外す");
+        removeBtn.style.marginLeft = "8px";
+        removeBtn.style.padding = "2px 8px";
+        removeBtn.style.fontSize = "14px";
+        removeBtn.style.lineHeight = "1";
         
         removeBtn.addEventListener("click", async () => {
           const setlistId = $("setlistSelect").value;
