@@ -2697,7 +2697,8 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     function autoScrollFrame(timestamp) {
       if (!scrollIsRunning) return;
 
-      document.getElementById("scrollSpeedValue").textContent = "実行中";
+      document.getElementById("scrollSpeedValue").textContent =
+  "位置:" + Math.round(scrollArea.scrollTop);
     
       if (scrollLastTime === null) {
         scrollLastTime = timestamp;
