@@ -2283,15 +2283,30 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     ];
     
     $("addSectionBtn").addEventListener("click", () => {
-      const name = prompt(
-        "セクション名を入力してください。\n\nよく使う名前：\n" +
-        commonSectionNames.join(" / "),
+      const choices = commonSectionNames
+        .map((name, index) => `${index + 1}. ${name}`)
+        .join("\n");
+    
+      const answer = prompt(
+        "セクション名を選んでください。\n\n" +
+        choices +
+        "\n\n番号、または自由なセクション名を入力してください。",
         "Aメロ"
       );
     
-      if (name === null || !name.trim()) return;
+      if (answer === null || !answer.trim()) return;
     
-      songSections.push(createSection(name.trim()));
+      const value = answer.trim();
+      const number = Number(value);
+    
+      const name =
+        Number.isInteger(number) &&
+        number >= 1 &&
+        number <= commonSectionNames.length
+          ? commonSectionNames[number - 1]
+          : value;
+    
+      songSections.push(createSection(name));
       renderSections();
     });
 
