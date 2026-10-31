@@ -2383,20 +2383,17 @@ $("loadMembersBtn").addEventListener("click", loadMembers);
     
         card.append(addLineButton);
         
-        const backButton = document.createElement("button");
-        backButton.type = "button";
-        backButton.className = "secondary";
-        backButton.textContent = "↑ セクション追加ボタンへ戻る";
-        backButton.style.marginTop = "12px";
+        const addSectionButton = document.createElement("button");
+        addSectionButton.type = "button";
+        addSectionButton.className = "secondary";
+        addSectionButton.textContent = "＋ セクションを追加";
+        addSectionButton.style.marginTop = "12px";
         
-        backButton.addEventListener("click", () => {
-          $("addSectionBtn").scrollIntoView({
-            behavior: "smooth",
-            block: "center"
-          });
+        addSectionButton.addEventListener("click", () => {
+          openSectionNameModal();
         });
         
-        card.append(backButton);
+        card.append(addSectionButton);
         container.append(card);
       });
     }
