@@ -1487,7 +1487,6 @@
       songsView.classList.remove("hidden");
       linksView.classList.add("hidden");
       setlistPanel.classList.add("hidden");
-      $("showSetlistsBtn").textContent = "セットリスト";
     
       songsTabBtn.classList.add("active");
       linksTabBtn.classList.remove("active");
@@ -1501,6 +1500,7 @@
     
       songsTabBtn.classList.remove("active");
       linksTabBtn.classList.add("active");
+      setlistsTabBtn.classList.remove("active");
     });
 
     setlistsTabBtn.addEventListener("click", () => {
@@ -1511,7 +1511,6 @@
     
       songsTabBtn.classList.remove("active");
       linksTabBtn.classList.remove("active");
-      setlistsTabBtn.classList.remove("active");
       setlistsTabBtn.classList.add("active");
     });
 
