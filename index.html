@@ -939,6 +939,64 @@
       flex-wrap: wrap;
     }
 
+    .view-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .view-tabs button {
+      margin: 0;
+      padding: 10px 20px;
+      background: #e5e7eb;
+      color: #374151;
+    }
+    
+    .view-tabs button.active {
+      background: #17251f;
+      color: white;
+    }
+    
+    .link-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 12px;
+      margin: 12px 0 24px;
+    }
+    
+    .link-card {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding: 16px;
+      background: #f8fafc;
+      border: 1px solid #d1d5db;
+      border-radius: 10px;
+      color: #17251f;
+      text-decoration: none;
+      transition: background 0.2s, border-color 0.2s;
+    }
+    
+    .link-card:hover {
+      background: #eef2f0;
+      border-color: #64748b;
+    }
+    
+    .link-card strong {
+      font-size: 17px;
+    }
+    
+    .link-card span {
+      font-size: 14px;
+      color: #4b5563;
+    }
+    
+    .link-card small {
+      margin-top: 4px;
+      color: #64748b;
+      font-weight: 600;
+    }
+
   </style>
   
 </head>
@@ -1075,6 +1133,46 @@
         <button id="linksTabBtn" type="button">
           🔗 リンク集
         </button>
+      </div>
+
+      <div id="linksView" class="hidden">
+        <section class="panel">
+          <h2>Useful Links</h2>
+          <p class="muted">NorTHtress Canceler メンバー共通のお役立ちリンク</p>
+      
+          <h3>🎸 演奏・練習</h3>
+          <div class="link-grid">
+            <a class="link-card" href="https://www.songsterr.com/" target="_blank" rel="noopener noreferrer">
+              <strong>Songsterr</strong>
+              <span>ギター・ベース・ドラムのTAB譜</span>
+              <small>サイトを開く ↗</small>
+            </a>
+      
+            <a class="link-card" href="https://www.musicca.com/jp/tools" target="_blank" rel="noopener noreferrer">
+              <strong>Musicca</strong>
+              <span>メトロノームなどの音楽ツール</span>
+              <small>サイトを開く ↗</small>
+            </a>
+          </div>
+      
+          <h3>📢 バンド・活動</h3>
+          <div class="link-grid">
+            <a class="link-card" href="https://sites.google.com/view/northtresscanceler/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer">
+              <strong>NorTHtress Canceler 公式サイト</strong>
+              <span>バンドのホームページ</span>
+              <small>サイトを開く ↗</small>
+            </a>
+          </div>
+      
+          <h3>🎙 スタジオ</h3>
+          <div class="link-grid">
+            <a class="link-card" href="https://www.studionoah.jp/" target="_blank" rel="noopener noreferrer">
+              <strong>STUDIO NOAH</strong>
+              <span>リハーサルスタジオ</span>
+              <small>サイトを開く ↗</small>
+            </a>
+          </div>
+        </section>
       </div>
 
       <div id="songsView" class="song-layout">
@@ -1376,6 +1474,27 @@
         list.append(btn);
       });
     }
+
+    const songsTabBtn = $("songsTabBtn");
+    const linksTabBtn = $("linksTabBtn");
+    const songsView = $("songsView");
+    const linksView = $("linksView");
+    
+    songsTabBtn.addEventListener("click", () => {
+      songsView.classList.remove("hidden");
+      linksView.classList.add("hidden");
+    
+      songsTabBtn.classList.add("active");
+      linksTabBtn.classList.remove("active");
+    });
+    
+    linksTabBtn.addEventListener("click", () => {
+      songsView.classList.add("hidden");
+      linksView.classList.remove("hidden");
+    
+      songsTabBtn.classList.remove("active");
+      linksTabBtn.classList.add("active");
+    });
 
     function openSong(song) {
       selectedSong = song;
