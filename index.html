@@ -1010,9 +1010,7 @@
     </div>
   
     <div class="header-user hidden">
-      <button id="showSetlistsBtn" type="button">
-        セットリスト
-      </button>
+
       <div class="header-user-info">
         <strong id="welcome">ログイン中</strong>
         <span id="roleLabel" class="muted"></span>
@@ -1129,6 +1127,9 @@
       <div class="view-tabs">
         <button id="songsTabBtn" type="button" class="active">
           🎵 曲一覧
+        </button>
+        <button id="setlistsTabBtn" type="button">
+          📋 セットリスト
         </button>
         <button id="linksTabBtn" type="button">
           🔗 リンク集
@@ -1480,6 +1481,7 @@
     const songsView = $("songsView");
     const linksView = $("linksView");
     const setlistPanel = $("setlistPanel");
+    const setlistsTabBtn = $("setlistsTabBtn");
     
     songsTabBtn.addEventListener("click", () => {
       songsView.classList.remove("hidden");
@@ -1489,6 +1491,7 @@
     
       songsTabBtn.classList.add("active");
       linksTabBtn.classList.remove("active");
+      setlistsTabBtn.classList.remove("active");
     });
     
     linksTabBtn.addEventListener("click", () => {
@@ -1498,6 +1501,18 @@
     
       songsTabBtn.classList.remove("active");
       linksTabBtn.classList.add("active");
+    });
+
+    setlistsTabBtn.addEventListener("click", () => {
+      songsView.classList.add("hidden");
+      linksView.classList.add("hidden");
+      setlistPanel.classList.remove("hidden");
+      $("detailPanel").classList.add("hidden");
+    
+      songsTabBtn.classList.remove("active");
+      linksTabBtn.classList.remove("active");
+      setlistsTabBtn.classList.remove("active");
+      setlistsTabBtn.classList.add("active");
     });
 
     function openSong(song) {
@@ -2151,28 +2166,7 @@
           list.style.display = "block";
         }
       });
-    
-    $("showSetlistsBtn").addEventListener("click", () => {
-      const songsView = $("songsView");
-      const setlistPanel = $("setlistPanel");
-      const button = $("showSetlistsBtn");
-    
-      if (setlistPanel.classList.contains("hidden")) {
-        songsView.classList.add("hidden");
-        $("detailPanel").classList.add("hidden");
-        setlistPanel.classList.remove("hidden");
-        linksView.classList.add("hidden");
-        linksTabBtn.classList.remove("active");
-        songsTabBtn.classList.add("active");
-        button.textContent = "曲一覧に戻る";
-      } else {
-        setlistPanel.classList.add("hidden");
-        $("showSetlistsBtn").textContent = "セットリスト";
-        songsView.classList.remove("hidden");
-        button.textContent = "セットリスト";
-      }
-    });
-    
+       
     $("openSetlistModalBtn").addEventListener("click", () => {
       $("setlistModal").hidden = false;
       $("setlistName").focus();
