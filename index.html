@@ -1485,6 +1485,7 @@
       songsView.classList.remove("hidden");
       linksView.classList.add("hidden");
       setlistPanel.classList.add("hidden");
+      $("showSetlistsBtn").textContent = "セットリスト";
     
       songsTabBtn.classList.add("active");
       linksTabBtn.classList.remove("active");
@@ -2166,6 +2167,7 @@
         button.textContent = "曲一覧に戻る";
       } else {
         setlistPanel.classList.add("hidden");
+        $("showSetlistsBtn").textContent = "セットリスト";
         songsView.classList.remove("hidden");
         button.textContent = "セットリスト";
       }
