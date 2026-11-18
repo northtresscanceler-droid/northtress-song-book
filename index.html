@@ -1479,10 +1479,12 @@
     const linksTabBtn = $("linksTabBtn");
     const songsView = $("songsView");
     const linksView = $("linksView");
+    const setlistPanel = $("setlistPanel");
     
     songsTabBtn.addEventListener("click", () => {
       songsView.classList.remove("hidden");
       linksView.classList.add("hidden");
+      setlistPanel.classList.add("hidden");
     
       songsTabBtn.classList.add("active");
       linksTabBtn.classList.remove("active");
@@ -1491,6 +1493,7 @@
     linksTabBtn.addEventListener("click", () => {
       songsView.classList.add("hidden");
       linksView.classList.remove("hidden");
+      setlistPanel.classList.add("hidden");
     
       songsTabBtn.classList.remove("active");
       linksTabBtn.classList.add("active");
