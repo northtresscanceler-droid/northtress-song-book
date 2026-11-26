@@ -1335,6 +1335,7 @@
     let songs = [];
     let selectedSong = null;
     let editingId = null;
+    let editingLinkId = null;
 
     function show(el, visible) {
       $(el).classList.toggle("hidden", !visible);
@@ -1748,16 +1749,49 @@
     
             const openText = document.createElement("small");
             openText.textContent = "サイトを開く ↗";
-    
+                
             card.append(title, description, openText);
+            
+            if (isAdmin) {
+              const editButton = document.createElement("button");
+              editButton.type = "button";
+              editButton.textContent = "編集";
+              editButton.addEventListener("click", (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+                openLinkEditForm(link);
+              });
+              card.append(editButton);
+            }
+            
             grid.append(card);
+
           });
     
         container.append(grid);
       });
     }
     
+    function openLinkEditForm(link) {
+      editingLinkId = link.id;
+    
+      $("linkFormTitle").textContent = "リンクを編集";
+      $("linkTitle").value = link.title || "";
+      $("linkUrl").value = link.url || "";
+      $("linkDescription").value = link.description || "";
+      $("linkCategory").value = link.category || "その他";
+    
+      message("linkFormStatus", "");
+      show("linkFormArea", true);
+    
+      $("linkFormArea").scrollIntoView({
+        behavior: "smooth",
+        block: "nearest"
+      });
+    }
+    
     $("addLinkBtn").addEventListener("click", () => {
+      editingLinkId = null;
       $("linkFormTitle").textContent = "リンクを追加";
       $("linkTitle").value = "";
       $("linkUrl").value = "";
@@ -1771,7 +1805,7 @@
       show("linkFormArea", false);
       message("linkFormStatus", "");
     });
-
+    
     $("saveLinkBtn").addEventListener("click", async () => {
       const title = $("linkTitle").value.trim();
       const url = $("linkUrl").value.trim();
@@ -1791,32 +1825,50 @@
       $("saveLinkBtn").disabled = true;
       message("linkFormStatus", "保存しています...");
     
-      const { data: existingLinks, error: countError } = await db
-        .from("links")
-        .select("sort_order")
-        .order("sort_order", { ascending: false })
-        .limit(1);
+      let error;
     
-      if (countError) {
-        console.error("リンク順の取得に失敗しました:", countError);
-        message("linkFormStatus", "保存できませんでした。");
-        $("saveLinkBtn").disabled = false;
-        return;
+      if (editingLinkId) {
+        const result = await db
+          .from("links")
+          .update({
+            title,
+            url,
+            description,
+            category
+          })
+          .eq("id", editingLinkId);
+    
+        error = result.error;
+      } else {
+        const { data: existingLinks, error: countError } = await db
+          .from("links")
+          .select("sort_order")
+          .order("sort_order", { ascending: false })
+          .limit(1);
+    
+        if (countError) {
+          console.error("リンク順の取得に失敗しました:", countError);
+          message("linkFormStatus", "保存できませんでした。");
+          $("saveLinkBtn").disabled = false;
+          return;
+        }
+    
+        const nextOrder = existingLinks?.length
+          ? existingLinks[0].sort_order + 1
+          : 1;
+    
+        const result = await db
+          .from("links")
+          .insert({
+            title,
+            url,
+            description,
+            category,
+            sort_order: nextOrder
+          });
+    
+        error = result.error;
       }
-    
-      const nextOrder = existingLinks?.length
-        ? existingLinks[0].sort_order + 1
-        : 1;
-    
-      const { error } = await db
-        .from("links")
-        .insert({
-          title,
-          url,
-          description,
-          category,
-          sort_order: nextOrder
-        });
     
       $("saveLinkBtn").disabled = false;
     
@@ -1826,6 +1878,7 @@
         return;
       }
     
+      editingLinkId = null;
       show("linkFormArea", false);
       await loadLinks();
     });
