@@ -1761,7 +1761,36 @@
                 event.stopPropagation();
                 openLinkEditForm(link);
               });
-              card.append(editButton);
+              
+              const deleteButton = document.createElement("button");
+              deleteButton.type = "button";
+              deleteButton.textContent = "削除";
+              
+              deleteButton.addEventListener("click", async (event) => {
+                event.preventDefault();
+                event.stopPropagation();
+              
+                const confirmed = confirm(
+                  `「${link.title}」を削除してもよろしいですか？`
+                );
+              
+                if (!confirmed) return;
+              
+                const { error } = await db
+                  .from("links")
+                  .delete()
+                  .eq("id", link.id);
+              
+                if (error) {
+                  console.error("リンクの削除に失敗しました:", error);
+                  alert("リンクを削除できませんでした。");
+                  return;
+                }
+              
+                await loadLinks();
+              });
+              card.append(editButton);              
+              card.append(deleteButton);
             }
             
             grid.append(card);
