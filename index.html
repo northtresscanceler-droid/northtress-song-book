@@ -1141,37 +1141,12 @@
           <h2>Useful Links</h2>
           <p class="muted">NorTHtress Canceler メンバー共通のお役立ちリンク</p>
       
-          <h3>🎸 演奏・練習</h3>
-          <div class="link-grid">
-            <a class="link-card" href="https://www.songsterr.com/" target="_blank" rel="noopener noreferrer">
-              <strong>Songsterr</strong>
-              <span>ギター・ベース・ドラムのTAB譜</span>
-              <small>サイトを開く ↗</small>
-            </a>
-      
-            <a class="link-card" href="https://www.musicca.com/jp/tools" target="_blank" rel="noopener noreferrer">
-              <strong>Musicca</strong>
-              <span>メトロノームなどの音楽ツール</span>
-              <small>サイトを開く ↗</small>
-            </a>
+          <div id="linksAdminArea" class="hidden">
+            <button id="addLinkBtn" type="button">＋ リンクを追加</button>
           </div>
       
-          <h3>🎙 スタジオ</h3>
-          <div class="link-grid">
-            <a class="link-card" href="https://www.studionoah.jp/" target="_blank" rel="noopener noreferrer">
-              <strong>STUDIO NOAH</strong>
-              <span>リハーサルスタジオ</span>
-              <small>サイトを開く ↗</small>
-            </a>
-          </div>
-    
-          <h3>📢 バンド・活動</h3>
-          <div class="link-grid">
-            <a class="link-card" href="https://sites.google.com/view/northtresscanceler/%E3%83%9B%E3%83%BC%E3%83%A0" target="_blank" rel="noopener noreferrer">
-              <strong>NorTHtress Canceler 公式サイト</strong>
-              <span>バンドのホームページ</span>
-              <small>サイトを開く ↗</small>
-            </a>
+          <div id="linksContainer">
+            <p class="muted">リンクを読み込んでいます...</p>
           </div>
         </section>
       </div>
@@ -1672,6 +1647,89 @@
       );
     }
 
+    
+    async function loadLinks() {
+      const container = $("linksContainer");
+      container.textContent = "リンクを読み込んでいます...";
+    
+      const { data, error } = await db
+        .from("links")
+        .select("id, title, url, description, category, sort_order")
+        .order("sort_order", { ascending: true });
+    
+      if (error) {
+        console.error("リンクの読み込みに失敗しました:", error);
+        container.textContent = "リンクを読み込めませんでした。";
+        return;
+      }
+    
+      renderLinks(data || []);
+    }
+    
+    function renderLinks(links) {
+      const container = $("linksContainer");
+      container.replaceChildren();
+    
+      show("linksAdminArea", isAdmin);
+    
+      if (links.length === 0) {
+        container.textContent = "登録されているリンクはありません。";
+        return;
+      }
+    
+      const categoryOrder = [
+        "演奏・練習",
+        "スタジオ",
+        "バンド・活動",
+        "その他"
+      ];
+    
+      const categories = [
+        ...categoryOrder.filter(category =>
+          links.some(link => link.category === category)
+        ),
+        ...new Set(
+          links
+            .map(link => link.category)
+            .filter(category => !categoryOrder.includes(category))
+        )
+      ];
+    
+      categories.forEach(category => {
+        const heading = document.createElement("h3");
+        heading.textContent = category;
+        container.append(heading);
+    
+        const grid = document.createElement("div");
+        grid.className = "link-grid";
+    
+        links
+          .filter(link => link.category === category)
+          .forEach(link => {
+            const card = document.createElement("a");
+            card.className = "link-card";
+            card.href = link.url;
+            card.target = "_blank";
+            card.rel = "noopener noreferrer";
+    
+            const title = document.createElement("strong");
+            title.textContent = link.title;
+    
+            const description = document.createElement("span");
+            description.textContent = link.description || "";
+    
+            const openText = document.createElement("small");
+            openText.textContent = "サイトを開く ↗";
+    
+            card.append(title, description, openText);
+            grid.append(card);
+          });
+    
+        container.append(grid);
+      });
+    }
+
+
     function renderSetlistCards(setlists) {
       const list = $("setlistList");
       const search = $("setlistSearch");
@@ -2105,6 +2163,7 @@
       setLoggedIn(true);
       await loadSongs();
       await loadSetlists();
+      await loadLinks();
       
       const detail = $("detailCombined");
       if (detail) {
