@@ -959,22 +959,45 @@
     
     .link-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 12px;
+      grid-template-columns: 1fr;
+      gap: 10px;
       margin: 12px 0 24px;
     }
     
     .link-card {
       display: flex;
       flex-direction: column;
-      gap: 8px;
-      padding: 16px;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+      box-sizing: border-box;
+      width: 100%;
+      min-height: 88px;
+      padding: 14px 130px 14px 16px;
       background: #f8fafc;
       border: 1px solid #d1d5db;
       border-radius: 10px;
       color: #17251f;
       text-decoration: none;
       transition: background 0.2s, border-color 0.2s;
+    }
+    
+    .link-card button {
+      position: absolute;
+      top: 12px;
+      padding: 5px 10px;
+      font-size: 12px;
+      line-height: 1.2;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    
+    .link-card .link-edit-button {
+      right: 68px;
+    }
+    
+    .link-card .link-delete-button {
+      right: 12px;
     }
     
     .link-card:hover {
@@ -1746,16 +1769,14 @@
     
             const description = document.createElement("span");
             description.textContent = link.description || "";
-    
-            const openText = document.createElement("small");
-            openText.textContent = "サイトを開く ↗";
-                
-            card.append(title, description, openText);
+            
+            card.append(title, description);
             
             if (isAdmin) {
               const editButton = document.createElement("button");
               editButton.type = "button";
               editButton.textContent = "編集";
+              editButton.className = "link-edit-button";
               editButton.addEventListener("click", (event) => {
                 event.preventDefault();
                 event.stopPropagation();
@@ -1765,6 +1786,7 @@
               const deleteButton = document.createElement("button");
               deleteButton.type = "button";
               deleteButton.textContent = "削除";
+              deleteButton.className = "link-delete-button";
               
               deleteButton.addEventListener("click", async (event) => {
                 event.preventDefault();
