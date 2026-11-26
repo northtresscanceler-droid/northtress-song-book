@@ -1143,6 +1143,34 @@
       
           <div id="linksAdminArea" class="hidden">
             <button id="addLinkBtn" type="button">＋ リンクを追加</button>
+          
+            <div id="linkFormArea" class="hidden">
+              <h3 id="linkFormTitle">リンクを追加</h3>
+          
+              <label for="linkTitle">リンク名</label>
+              <input id="linkTitle" type="text" placeholder="例：YouTube">
+          
+              <label for="linkUrl">URL</label>
+              <input id="linkUrl" type="url" placeholder="https://example.com">
+          
+              <label for="linkDescription">説明</label>
+              <input id="linkDescription" type="text" placeholder="リンクの説明">
+          
+              <label for="linkCategory">カテゴリー</label>
+              <select id="linkCategory">
+                <option value="演奏・練習">演奏・練習</option>
+                <option value="スタジオ">スタジオ</option>
+                <option value="バンド・活動">バンド・活動</option>
+                <option value="その他">その他</option>
+              </select>
+          
+              <div>
+                <button id="saveLinkBtn" type="button">保存</button>
+                <button id="cancelLinkBtn" type="button">キャンセル</button>
+              </div>
+          
+              <p id="linkFormStatus" class="muted"></p>
+            </div>
           </div>
       
           <div id="linksContainer">
@@ -1728,7 +1756,79 @@
         container.append(grid);
       });
     }
+    
+    $("addLinkBtn").addEventListener("click", () => {
+      $("linkFormTitle").textContent = "リンクを追加";
+      $("linkTitle").value = "";
+      $("linkUrl").value = "";
+      $("linkDescription").value = "";
+      $("linkCategory").value = "演奏・練習";
+      message("linkFormStatus", "");
+      show("linkFormArea", true);
+    });
+    
+    $("cancelLinkBtn").addEventListener("click", () => {
+      show("linkFormArea", false);
+      message("linkFormStatus", "");
+    });
 
+    $("saveLinkBtn").addEventListener("click", async () => {
+      const title = $("linkTitle").value.trim();
+      const url = $("linkUrl").value.trim();
+      const description = $("linkDescription").value.trim();
+      const category = $("linkCategory").value;
+    
+      if (!title || !url) {
+        message("linkFormStatus", "リンク名とURLを入力してください。");
+        return;
+      }
+    
+      if (!/^https?:\/\//i.test(url)) {
+        message("linkFormStatus", "URLは https:// または http:// から入力してください。");
+        return;
+      }
+    
+      $("saveLinkBtn").disabled = true;
+      message("linkFormStatus", "保存しています...");
+    
+      const { data: existingLinks, error: countError } = await db
+        .from("links")
+        .select("sort_order")
+        .order("sort_order", { ascending: false })
+        .limit(1);
+    
+      if (countError) {
+        console.error("リンク順の取得に失敗しました:", countError);
+        message("linkFormStatus", "保存できませんでした。");
+        $("saveLinkBtn").disabled = false;
+        return;
+      }
+    
+      const nextOrder = existingLinks?.length
+        ? existingLinks[0].sort_order + 1
+        : 1;
+    
+      const { error } = await db
+        .from("links")
+        .insert({
+          title,
+          url,
+          description,
+          category,
+          sort_order: nextOrder
+        });
+    
+      $("saveLinkBtn").disabled = false;
+    
+      if (error) {
+        console.error("リンクの保存に失敗しました:", error);
+        message("linkFormStatus", "保存に失敗しました。");
+        return;
+      }
+    
+      show("linkFormArea", false);
+      await loadLinks();
+    });
 
     function renderSetlistCards(setlists) {
       const list = $("setlistList");
